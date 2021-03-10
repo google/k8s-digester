@@ -1,0 +1,181 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: kpt.dev/v1alpha1
+kind: Kptfile
+metadata:
+  name: digester
+packageMetadata:
+  shortDescription: >-
+    The digester mutating admission webhook resolves tags to digests for
+    container and initContainer images in Kubernetes Pods and Pod templates.
+openAPI:
+  definitions:
+    io.k8s.cli.setters.cert-dir:
+      description: certificate volume mount path
+      x-k8s-cli:
+        setter:
+          name: cert-dir
+          value: /certs
+          setBy: package-default
+    io.k8s.cli.setters.debug:
+      type: string
+      description: enable debug logging
+      x-k8s-cli:
+        setter:
+          name: debug
+          value: "false"
+          setBy: package-default
+    io.k8s.cli.setters.disable-cert-rotation:
+      description: disable cert-controller rotation
+      x-k8s-cli:
+        setter:
+          name: disable-cert-rotation
+          value: "false"
+          setBy: package-default
+    io.k8s.cli.setters.dry-run:
+      description: set to true to only log resolved digests
+      x-k8s-cli:
+        setter:
+          name: dry-run
+          value: "false"
+          setBy: package-default
+    io.k8s.cli.setters.failure-policy:
+      description: set to Ignore for fail open, or set to Fail for fail closed
+      x-k8s-cli:
+        setter:
+          name: failure-policy
+          value: Ignore
+          setBy: package-default
+    io.k8s.cli.setters.health-port:
+      description: webhook health check port
+      x-k8s-cli:
+        setter:
+          name: health-port
+          value: "9090"
+          setBy: package-default
+    io.k8s.cli.setters.image:
+      description: container image
+      x-k8s-cli:
+        setter:
+          name: image
+          value: ko://github.com/google/k8s-digester
+          setBy: package-default
+          required: true
+    io.k8s.cli.setters.metrics-port:
+      description: webhook metrics port
+      x-k8s-cli:
+        setter:
+          name: metrics-port
+          value: "8888"
+          setBy: package-default
+    io.k8s.cli.setters.offline:
+      description: set to true to disable looking up imagePullSecrets
+      x-k8s-cli:
+        setter:
+          name: offline
+          value: "false"
+          setBy: package-default
+    io.k8s.cli.setters.port:
+      description: webhook server port
+      x-k8s-cli:
+        setter:
+          name: port
+          value: "8443"
+          setBy: package-default
+    io.k8s.cli.setters.replicas:
+      type: integer
+      description: webhook pod replicas
+      x-k8s-cli:
+        setter:
+          name: replicas
+          value: "3"
+          setBy: package-default
+    io.k8s.cli.setters.request-cpu:
+      description: CPU request
+      x-k8s-cli:
+        setter:
+          name: request-cpu
+          value: 250m
+          setBy: package-default
+    io.k8s.cli.setters.request-ephemeral-storage:
+      description: ephemeral storage request
+      x-k8s-cli:
+        setter:
+          name: request-ephemeral-storage
+          value: 512Mi
+          setBy: package-default
+    io.k8s.cli.setters.request-memory:
+      description: memory request
+      x-k8s-cli:
+        setter:
+          name: request-memory
+          value: 512Mi
+          setBy: package-default
+    io.k8s.cli.substitutions.cert-dir-flag:
+      x-k8s-cli:
+        substitution:
+          name: cert-dir-flag
+          pattern: --cert-dir=${cert-dir}
+          values:
+          - marker: ${cert-dir}
+            ref: '#/definitions/io.k8s.cli.setters.cert-dir'
+    io.k8s.cli.substitutions.disable-cert-rotation-flag:
+      x-k8s-cli:
+        substitution:
+          name: disable-cert-rotation-flag
+          pattern: --disable-cert-rotation=${disable-cert-rotation}
+          values:
+          - marker: ${disable-cert-rotation}
+            ref: '#/definitions/io.k8s.cli.setters.disable-cert-rotation'
+    io.k8s.cli.substitutions.dry-run-flag:
+      x-k8s-cli:
+        substitution:
+          name: dry-run-flag
+          pattern: --dry-run=${dry-run}
+          values:
+          - marker: ${dry-run}
+            ref: '#/definitions/io.k8s.cli.setters.dry-run'
+    io.k8s.cli.substitutions.health-addr-flag:
+      x-k8s-cli:
+        substitution:
+          name: health-addr-flag
+          pattern: --health-addr=:${health-port}
+          values:
+          - marker: ${health-port}
+            ref: '#/definitions/io.k8s.cli.setters.health-port'
+    io.k8s.cli.substitutions.metrics-addr-flag:
+      x-k8s-cli:
+        substitution:
+          name: metrics-addr-flag
+          pattern: --metrics-addr=:${metrics-port}
+          values:
+          - marker: ${metrics-port}
+            ref: '#/definitions/io.k8s.cli.setters.metrics-port'
+    io.k8s.cli.substitutions.offline-flag:
+      x-k8s-cli:
+        substitution:
+          name: offline-flag
+          pattern: --offline=${offline}
+          values:
+          - marker: ${offline}
+            ref: '#/definitions/io.k8s.cli.setters.offline'
+    io.k8s.cli.substitutions.port-flag:
+      x-k8s-cli:
+        substitution:
+          name: port-flag
+          pattern: --port=${port}
+          values:
+          - marker: ${port}
+            ref: '#/definitions/io.k8s.cli.setters.port'

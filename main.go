@@ -1,0 +1,52 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package main
+
+import (
+	"os"
+
+	flag "github.com/spf13/pflag"
+	"sigs.k8s.io/controller-runtime/pkg/manager/signals"
+
+	"github.com/google/k8s-digester/cmd/function"
+	"github.com/google/k8s-digester/cmd/version"
+	"github.com/google/k8s-digester/cmd/webhook"
+
+	// blank import for all k8s auth plugins
+	_ "k8s.io/client-go/plugin/pkg/client/auth"
+)
+
+func main() {
+	if err := run(); err != nil {
+		os.Exit(1)
+	}
+}
+
+func run() error {
+	hideFlagsFromImportedPackages()
+	ctx := signals.SetupSignalHandler()
+	cmd := function.Cmd(ctx)
+	cmd.AddCommand(
+		webhook.Cmd,
+		version.Cmd,
+	)
+	return cmd.ExecuteContext(ctx)
+}
+
+func hideFlagsFromImportedPackages() {
+	flag.VisitAll(func(f *flag.Flag) {
+		f.Hidden = true
+	})
+}

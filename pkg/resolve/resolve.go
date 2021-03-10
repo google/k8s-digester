@@ -1,0 +1,106 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// Package resolve looks up image references in resources and resolves tags to
+// digests using the `crane` package from `go-containerregistry`.
+package resolve
+
+import (
+	"context"
+	"fmt"
+	"strings"
+
+	"github.com/go-logr/logr"
+	"github.com/google/go-containerregistry/pkg/authn"
+	"github.com/google/go-containerregistry/pkg/crane"
+	"k8s.io/client-go/rest"
+	"sigs.k8s.io/kustomize/kyaml/yaml"
+
+	"github.com/google/k8s-digester/pkg/keychain"
+	"github.com/google/k8s-digester/pkg/version"
+)
+
+var resolveTagFn = resolveTag // override for unit testing
+
+// ImageTags looks up the digest and adds it to the image field
+// for containers and initContainers in pods and pod template specs.
+//
+// It looks for image fields with tags in these sequence nodes:
+// - `spec.containers`
+// - `spec.initContainers`
+// - `spec.template.spec.containers`
+// - `spec.template.spec.initContainers`
+//
+// The `config` input parameter can be null. In this case, the function
+// will not attempt to retrieve imagePullSecrets from the cluster.
+func ImageTags(ctx context.Context, log logr.Logger, config *rest.Config, n *yaml.RNode) error {
+	kc, err := keychain.Create(ctx, log, config, n)
+	if err != nil {
+		return fmt.Errorf("could not create keychain: %w", err)
+	}
+	imageTagFilter := &ImageTagFilter{
+		Log:      log,
+		Keychain: kc,
+	}
+	return n.PipeE(
+		yaml.Lookup("spec"),
+		yaml.Tee(yaml.Lookup("containers"), imageTagFilter),
+		yaml.Tee(yaml.Lookup("initContainers"), imageTagFilter),
+		yaml.Lookup("template", "spec"),
+		yaml.Tee(yaml.Lookup("containers"), imageTagFilter),
+		yaml.Tee(yaml.Lookup("initContainers"), imageTagFilter),
+	)
+}
+
+// ImageTagFilter resolves image tags to digests
+type ImageTagFilter struct {
+	Log      logr.Logger
+	Keychain authn.Keychain
+}
+
+var _ yaml.Filter = &ImageTagFilter{}
+
+// Filter to resolve image tags to digests for a list of containers
+func (f *ImageTagFilter) Filter(n *yaml.RNode) (*yaml.RNode, error) {
+	if err := n.VisitElements(f.filterImage); err != nil {
+		return nil, err
+	}
+	return n, nil
+}
+
+func (f *ImageTagFilter) filterImage(n *yaml.RNode) error {
+	imageNode, err := n.Pipe(yaml.Lookup("image"))
+	if err != nil {
+		s, _ := n.String()
+		return fmt.Errorf("could not lookup image in node %v: %w", s, err)
+	}
+	image := yaml.GetValue(imageNode)
+	if strings.Contains(image, "@") {
+		return nil // already has digest, skip
+	}
+	digest, err := resolveTagFn(image, f.Keychain)
+	if err != nil {
+		return fmt.Errorf("could not get digest for %s: %w", image, err)
+	}
+	f.Log.V(1).Info("resolved tag to digest", "image", image, "digest", digest)
+	imageWithDigest := fmt.Sprintf("%s@%s", image, digest)
+	n.Pipe(yaml.Lookup("image"), yaml.Set(yaml.NewStringRNode(imageWithDigest)))
+	return nil
+}
+
+func resolveTag(image string, keychain authn.Keychain) (string, error) {
+	return crane.Digest(image,
+		crane.WithAuthFromKeychain(keychain),
+		crane.WithUserAgent(fmt.Sprintf("%s/%s", "digester", version.Version)))
+}
