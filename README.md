@@ -52,7 +52,7 @@ mutating webhook to deploy container images by digest.
 ## Running the config function
 
 1.  Download the digester binary for your platform from the
-    [Releases page](releases).
+    [Releases page](../../releases).
 
     Alternatively, you can download the latest version using these commands:
 
@@ -77,9 +77,7 @@ mutating webhook to deploy container images by digest.
     and
     [installing kustomize](https://kubectl.docs.kubernetes.io/installation/kustomize/).
 
-3.  Run the digester config function using either
-    [kpt](https://googlecontainertools.github.io/kpt/) or
-    [kustomize](https://kubectl.docs.kubernetes.io/guides/introduction/kustomize/):
+3.  Run the digester config function:
 
     -   Using the kpt
         [exec runtime](https://googlecontainertools.github.io/kpt/guides/producer/functions/exec/):
@@ -142,7 +140,7 @@ You need a Kubernetes cluster version 1.16 or later.
 5.  Deploy the webhook:
 
     ```bash
-    kpt live apply manifests/ --reconcile-timeout=5m --output=table
+    kpt live apply manifests/ --reconcile-timeout=3m --output=table
     ```
 
 6.  Add the `digest-resolution: enabled` label to namespaces where you want the
