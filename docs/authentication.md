@@ -108,7 +108,7 @@ kpt fn source [manifest file or directory] \
   | kpt fn run --network \
     --env DOCKER_CONFIG=/.docker \
     --mount type=bind,src="$HOME/.docker/config.json",dst=/.docker/config.json \
-    --image gcr.io/cloud-solutions-images/digester
+    --image gcr.io/cloud-solutions-images/k8s-digester
 ```
 
 The `--network` flag provides external network access to digester running in
@@ -136,7 +136,7 @@ kpt fn source [manifest file or directory] \
   | kpt fn run --network \
     --env OFFLINE=false --env KUBECONFIG=/.kube/config \
     --mount type=bind,src="$HOME/.kube/config",dst=/.kube/config \
-    --image gcr.io/cloud-solutions-images/digester
+    --image gcr.io/cloud-solutions-images/k8s-digester
 ```
 
 When using online authentication, digester connects to the Kubernetes cluster

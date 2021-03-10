@@ -59,7 +59,7 @@ mutating webhook to deploy container images by digest.
     ```bash
     VERSION=$(curl -s https://api.github.com/repos/google/k8s-digester/releases/latest | jq -r '.tag_name')
 
-    curl -sLo digester "https://github.com/google/k8s-digester/releases/download/$VERSION/digester_$(uname -s)_$(uname -m)"
+    curl -Lo digester "https://github.com/google/k8s-digester/releases/download/$VERSION/digester_$(uname -s)_$(uname -m)"
 
     chmod +x digester
     ```

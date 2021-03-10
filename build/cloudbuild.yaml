@@ -47,7 +47,7 @@ steps:
   - -count=1
   - -race
   - -short
-  - -timeout=3m
+  - -timeout=5m
   - -v
   - -vet=asmdecl,assign,atomic,bools,buildtag,cgocall,composites,copylocks,errorsas,httpresponse,loopclosure,lostcancel,nilfunc,printf,shift,stdmethods,structtag,tests,unmarshal,unreachable,unsafeptr,unusedresult
   - ./...
@@ -91,7 +91,7 @@ steps:
   - -eu
   - -c
   - |-
-    export GOFLAGS="-v -ldflags=-X=$(go list)/cmd/version.Version=${TAG_NAME%%-rc*}"
+    export GOFLAGS="-v -ldflags=-X=$(go list)/pkg/version.Version=${TAG_NAME%%-rc*}"
     /workspace/.gopath/bin/ko publish --base-import-paths --platform linux/amd64,linux/arm64 --tags latest,$BUILD_ID,$COMMIT_SHA,${TAG_NAME%%-rc*} . > .image
   env:
   - 'BUILD_ID=$BUILD_ID'
