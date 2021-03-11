@@ -43,7 +43,7 @@ spec:
         kubernetes.io/os: linux
       containers:
       - name: manager
-        image: ko://github.com/google/k8s-digester # {"$kpt-set":"image"}
+        image: gcr.io/cloud-solutions-images/k8s-digester@sha256:d2f39672599b9580f11cbec61f0297c779e959e5b888da3f77aa74314b5d2440 # {"$kpt-set":"image"}
         args:
         - webhook
         - --cert-dir=/certs # {"$kpt-set":"cert-dir-flag"}

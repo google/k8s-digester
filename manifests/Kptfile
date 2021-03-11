@@ -18,8 +18,8 @@ metadata:
   name: digester
 packageMetadata:
   shortDescription: >-
-    The digester mutating admission webhook resolves tags to digests for
-    container and initContainer images in Kubernetes Pods and Pod templates.
+    The digester mutating admission webhook resolves tags to digests for container
+    and initContainer images in Kubernetes Pods and Pod templates.
 openAPI:
   definitions:
     io.k8s.cli.setters.cert-dir:
@@ -70,9 +70,10 @@ openAPI:
       x-k8s-cli:
         setter:
           name: image
-          value: ko://github.com/google/k8s-digester
-          setBy: package-default
+          value: gcr.io/cloud-solutions-images/k8s-digester@sha256:d2f39672599b9580f11cbec61f0297c779e959e5b888da3f77aa74314b5d2440
+          setBy: cloudbuild
           required: true
+          isSet: true
     io.k8s.cli.setters.metrics-port:
       description: webhook metrics port
       x-k8s-cli:
