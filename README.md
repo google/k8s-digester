@@ -46,8 +46,7 @@ to your clusters. A Binary Authorization
 [attestation](https://cloud.google.com/binary-authorization/docs/key-concepts#attestations)
 is valid for a particular container image digest. You must deploy container
 images by digest so that Binary Authorization can verify the attestations for
-the container image. You can use digester as both a config function and a
-mutating webhook to deploy container images by digest.
+the container image. You can use digester to deploy container images by digest.
 
 ## Running the config function
 
@@ -122,28 +121,25 @@ You need a Kubernetes cluster version 1.16 or later.
     gcloud components install kpt --quiet
     ```
 
-3.  Look up the latest version of digester:
+    For alternative kpt installation options, see the documentation for
+    [installing kpt](https://googlecontainertools.github.io/kpt/installation/).
 
-    ```bash
-    VERSION=$(curl -s https://api.github.com/repos/google/k8s-digester/releases/latest | jq -r '.tag_name')
-    ```
-
-4.  Get the digester webhook kpt package and store the files in a directory
+3.  Get the digester webhook kpt package and store the files in a directory
     called `manifests`:
 
     ```bash
-    kpt pkg get \
-      https://github.com/google/k8s-digester.git/manifests@$VERSION \
-      manifests
+    VERSION=$(curl -s https://api.github.com/repos/google/k8s-digester/releases/latest | jq -r '.tag_name')
+
+    kpt pkg get https://github.com/google/k8s-digester.git/manifests@$VERSION manifests
     ```
 
-5.  Deploy the webhook:
+4.  Deploy the webhook:
 
     ```bash
     kpt live apply manifests/ --reconcile-timeout=3m --output=table
     ```
 
-6.  Add the `digest-resolution: enabled` label to namespaces where you want the
+5.  Add the `digest-resolution: enabled` label to namespaces where you want the
     webhook to resolve tags to digests:
 
     ```bash
@@ -152,9 +148,9 @@ You need a Kubernetes cluster version 1.16 or later.
 
 ### Private clusters
 
-You must add a firewall rule if you install the webhook in a
+If you install the webhook in a
 [private Google Kubernetes Engine (GKE) cluster](https://cloud.google.com/kubernetes-engine/docs/how-to/private-clusters),
-In a private cluster, the cluster nodes only have
+you must add a firewall rule. In a private cluster, the nodes only have
 [internal IP addresses](https://cloud.google.com/vpc/docs/ip-addresses).
 The firewall rule allows the API server to access the webhook running on port
 8443 on the cluster nodes.
@@ -190,11 +186,11 @@ The firewall rule allows the API server to access the webhook running on port
 
     ```bash
     gcloud compute firewall-rules create allow-api-server-to-digester-webhook \
-        --action ALLOW \
-        --direction INGRESS \
-        --source-ranges "$API_SERVER_CIDR" \
-        --rules tcp:8443 \
-        --target-tags "$TARGET_TAGS"
+      --action ALLOW \
+      --direction INGRESS \
+      --source-ranges "$API_SERVER_CIDR" \
+      --rules tcp:8443 \
+      --target-tags "$TARGET_TAGS"
     ```
 
 You can read more about private cluster firewall rules in the

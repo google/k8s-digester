@@ -167,3 +167,17 @@ jobs:
         asset_path: SHA256SUMS
         asset_name: SHA256SUMS
         asset_content_type: text/plain
+
+    - name: Update version in readme
+      run: |
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git reset --hard
+        git remote update
+        git checkout main
+        git pull --no-edit --no-rebase --strategy-option=theirs origin
+        sed -i~ "s/VERSION=.*/VERSION=$VERSION/" README.md
+        git add README.md
+        git commit -m "Update version in readme to $VERSION"
+        git pull --no-edit --no-rebase --strategy-option=ours origin
+        git push origin main
