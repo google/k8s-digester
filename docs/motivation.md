@@ -83,7 +83,7 @@ are documented in the tutorial
 [Cloud Run](https://cloud.google.com/run/docs/deploying#service),
 [Cloud Run for Anthos](https://cloud.google.com/kuberun/docs/deploying#service),
 and
-[Knative Serving](https://knative.dev/docs/serving/tag-resolution/#corporate-proxy)
+[Knative Serving](https://knative.dev/docs/serving/tag-resolution/)
 resolve image tags to digests on deployment. The digest is stored in a service
 revision, and all instances of that service revision use the digest.
 
