@@ -56,7 +56,7 @@ the container image. You can use digester to deploy container images by digest.
     Alternatively, you can download the latest version using these commands:
 
     ```bash
-    VERSION=v0.0.3
+    VERSION=v0.1.0
 
     curl -Lo digester "https://github.com/google/k8s-digester/releases/download/$VERSION/digester_$(uname -s)_$(uname -m)"
 
@@ -128,7 +128,7 @@ You need a Kubernetes cluster version 1.16 or later.
     called `manifests`:
 
     ```bash
-    VERSION=v0.0.3
+    VERSION=v0.1.0
 
     kpt pkg get https://github.com/google/k8s-digester.git/manifests@$VERSION manifests
     ```
@@ -204,7 +204,7 @@ unable to use kpt, you can deploy the digester using kubectl:
 ```bash
 git clone https://github.com/google/k8s-digester.git digester
 cd digester
-VERSION=v0.0.3
+VERSION=v0.1.0
 git checkout $VERSION
 kubectl apply -f manifests/namespace.yaml
 kubectl apply -f manifests/
