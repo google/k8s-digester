@@ -139,9 +139,9 @@ steps:
 
 substitutions:
   _IMAGE_REPO: gcr.io/$PROJECT_ID
-  _KO_VERSION: '0.8.1'
-  _KPT_VERSION: '0.38.1'
-  _KUBEBUILDER_VERSION: '2.3.1'
+  _KO_VERSION: '0.8.2'
+  _KPT_VERSION: '0.39.2'
+  _KUBEBUILDER_VERSION: '2.3.2'
   _SECRET_NAME: projects/$PROJECT_ID/secrets/$REPO_NAME-deploy-key/versions/latest
 
 timeout: 3600s

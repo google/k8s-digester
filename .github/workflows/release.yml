@@ -52,7 +52,7 @@ jobs:
 
     - name: Set flags
       run: |
-        echo GOFLAGS="-v -ldflags=-X=$(go list)/pkg/version.Version=$VERSION" >> $GITHUB_ENV
+        echo GOFLAGS="-v -trimpath -ldflags=-X=$(go list)/pkg/version.Version=$VERSION" >> $GITHUB_ENV
 
     - name: Print env
       run: |
@@ -74,7 +74,7 @@ jobs:
     - name: Install ko
       run: |
         mkdir -p $(go env GOPATH)/bin
-        curl -sSL "https://github.com/google/ko/releases/download/v0.8.1/ko_0.8.1_Linux_x86_64.tar.gz" | tar -xzC $(go env GOPATH)/bin ko
+        curl -sSL "https://github.com/google/ko/releases/download/v0.8.2/ko_0.8.2_Linux_x86_64.tar.gz" | tar -xzC $(go env GOPATH)/bin ko
 
     - name: Build and push container image
       run: |
@@ -86,7 +86,7 @@ jobs:
     - name: Install crane
       run: |
         mkdir -p $(go env GOPATH)/bin
-        curl -sSL "https://github.com/google/go-containerregistry/releases/download/v0.4.1/go-containerregistry_Linux_x86_64.tar.gz" | tar -xzC $(go env GOPATH)/bin crane
+        curl -sSL "https://github.com/google/go-containerregistry/releases/download/v0.5.0/go-containerregistry_Linux_x86_64.tar.gz" | tar -xzC $(go env GOPATH)/bin crane
 
     - name: Get GCR image digest
       run: |

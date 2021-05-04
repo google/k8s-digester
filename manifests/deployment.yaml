@@ -77,9 +77,9 @@ spec:
               fieldPath: metadata.namespace
         resources:
           requests:
-            cpu: 250m # {"$kpt-set":"request-cpu"}
-            ephemeral-storage: 512Mi # {"$kpt-set":"request-ephemeral-storage"}
-            memory: 512Mi # {"$kpt-set":"request-memory"}
+            cpu: 100m # {"$kpt-set":"request-cpu"}
+            ephemeral-storage: 256Mi # {"$kpt-set":"request-ephemeral-storage"}
+            memory: 256Mi # {"$kpt-set":"request-memory"}
         volumeMounts:
         - name: cert
           readOnly: true

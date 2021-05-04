@@ -107,21 +107,21 @@ openAPI:
       x-k8s-cli:
         setter:
           name: request-cpu
-          value: 250m
+          value: 100m
           setBy: package-default
     io.k8s.cli.setters.request-ephemeral-storage:
       description: ephemeral storage request
       x-k8s-cli:
         setter:
           name: request-ephemeral-storage
-          value: 512Mi
+          value: 256Mi
           setBy: package-default
     io.k8s.cli.setters.request-memory:
       description: memory request
       x-k8s-cli:
         setter:
           name: request-memory
-          value: 512Mi
+          value: 256Mi
           setBy: package-default
     io.k8s.cli.substitutions.cert-dir-flag:
       x-k8s-cli:
