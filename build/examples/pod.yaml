@@ -19,8 +19,7 @@ metadata:
 spec:
   containers:
   - name: hello
-    image: gcr.io/google-samples/hello-app:1.0
+    image: gcr.io/google-containers/pause:3.2
   initContainers:
   - name: init
-    image: mirror.gcr.io/library/busybox:1.31.0
-    command: ['ls']
+    image: gcr.io/google-samples/hello-app:1.0
