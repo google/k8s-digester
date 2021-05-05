@@ -21,18 +21,18 @@ require (
 	github.com/go-logr/stdr v0.4.0
 	github.com/go-logr/zapr v0.4.0
 	github.com/google/go-cmp v0.5.5
-	github.com/google/go-containerregistry v0.4.1
-	github.com/google/go-containerregistry/pkg/authn/k8schain v0.0.0-20210306220256-71a6fe934ea5
-	github.com/open-policy-agent/cert-controller v0.1.1-0.20210308205344-203624759536
+	github.com/google/go-containerregistry v0.5.0
+	github.com/google/go-containerregistry/pkg/authn/k8schain v0.0.0-20210430144454-9cf3ed4ac182
+	github.com/open-policy-agent/cert-controller v0.2.0
 	github.com/spf13/cobra v1.1.3
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.7.1
 	go.uber.org/zap v1.16.0
 	gomodules.xyz/jsonpatch/v2 v2.1.0
-	k8s.io/api v0.20.4
-	k8s.io/apimachinery v0.20.4
-	k8s.io/client-go v0.20.4
-	k8s.io/klog/v2 v2.6.0
+	k8s.io/api v0.20.6
+	k8s.io/apimachinery v0.20.6
+	k8s.io/client-go v0.20.6
+	k8s.io/klog/v2 v2.8.0
 	sigs.k8s.io/controller-runtime v0.8.3
-	sigs.k8s.io/kustomize/kyaml v0.10.15
+	sigs.k8s.io/kustomize/kyaml v0.10.19
 )
