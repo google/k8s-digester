@@ -216,6 +216,8 @@ kubectl apply -f manifests/
 
 -   [Developing digester](docs/development.md)
 
+-   [Releasing digester](docs/release.md)
+
 ## Disclaimer
 
 This is not an officially supported Google product.

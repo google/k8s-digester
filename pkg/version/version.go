@@ -12,11 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package version provides the version of this tool. The variable `Version`
-// can be populated at compile time using `ldflags`.
+// Package version provides the version of this tool.
+// Ref: https://pkg.go.dev/embed
 package version
 
+import (
+	_ "embed"
+	"strings"
+)
+
 var (
-	// Version is provided by ldflags at compile time
-	Version = "(devel)"
+	Version = strings.TrimSpace(version)
+
+	//go:embed version.txt
+	version string
 )
