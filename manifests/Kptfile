@@ -1,32 +1,16 @@
-# Copyright 2021 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 apiVersion: kpt.dev/v1
 kind: Kptfile
 metadata:
   name: digester
   annotations:
-    config.kubernetes.io/local-config: 'true'
+    config.kubernetes.io/local-config: "true"
 info:
-  description: >-
-    The digester mutating admission webhook resolves tags to digests for
-    container and initContainer images in Kubernetes Pod and Pod template specs.
-inventory:
-  inventoryID: 6f6bbbb2-4879-45c6-a89c-2c0928f0f8a8
-  namespace: digester-system
-  name: digester-inventory
+  description: The digester mutating admission webhook resolves tags to digests for container and initContainer images in Kubernetes Pod and Pod template specs.
 pipeline:
   mutators:
-  - configPath: setters.yaml
-    image: gcr.io/kpt-fn/apply-setters:v0.1@sha256:d2a0219b24a47ebb4bf568d3ccf5bb0e7be2f3f94b28b0c3b1bed011a51d7c35
+    - image: gcr.io/kpt-fn/apply-setters:v0.1@sha256:d2a0219b24a47ebb4bf568d3ccf5bb0e7be2f3f94b28b0c3b1bed011a51d7c35
+      configPath: setters.yaml
+inventory:
+  namespace: digester-system
+  name: digester-inventory
+  inventoryID: 6f6bbbb2-4879-45c6-a89c-2c0928f0f8a8
