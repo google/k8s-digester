@@ -15,7 +15,7 @@ as the Container Registry and Artifact Registry image repositories.
 
 1.  Enable the GKE and Artifact Registry APIs:
 
-    ```bash
+    ```sh
     gcloud services enable \
       container.googleapis.com \
       artifactregistry.googleapis.com
@@ -27,7 +27,7 @@ as the Container Registry and Artifact Registry image repositories.
     [`cloud-platform` access scope](https://cloud.google.com/compute/docs/access/service-accounts#service_account_permissions)
     to the nodes:
 
-    ```bash
+    ```sh
     PROJECT_ID=$(gcloud config get-value core/project)
     ZONE=us-central1-f
 
@@ -42,7 +42,7 @@ as the Container Registry and Artifact Registry image repositories.
 
 3.  Create a Google service account:
 
-    ```bash
+    ```sh
     GSA_NAME=digester-webhook
     GSA=$GSA_NAME@$PROJECT_ID.iam.gserviceaccount.com
 
@@ -59,7 +59,7 @@ as the Container Registry and Artifact Registry image repositories.
     [Container Registry Service Agent role](https://cloud.google.com/iam/docs/understanding-roles#service-agents-roles)
     to the Google service account at the project level:
 
-    ```bash
+    ```sh
     gcloud projects add-iam-policy-binding $PROJECT_ID \
       --member "serviceAccount:$GSA" \
       --role roles/containerregistry.ServiceAgent
@@ -69,7 +69,7 @@ as the Container Registry and Artifact Registry image repositories.
     [Artifact Registry Reader](https://cloud.google.com/iam/docs/understanding-roles#artifact-registry-roles)
     to the Google service account at the project level:
 
-    ```bash
+    ```sh
     gcloud projects add-iam-policy-binding $PROJECT_ID \
       --member "serviceAccount:$GSA" \
       --role roles/artifactregistry.reader
@@ -80,7 +80,7 @@ as the Container Registry and Artifact Registry image repositories.
     to the `digester-admin` Kubernetes service account in the `digester-system`
     namespace on the Google service account:
 
-    ```bash
+    ```sh
     gcloud iam service-accounts add-iam-policy-binding "$GSA" \
       --member "serviceAccount:$PROJECT_ID.svc.id.goog[digester-system/digester-admin]" \
       --role roles/iam.workloadIdentityUser
@@ -89,7 +89,7 @@ as the Container Registry and Artifact Registry image repositories.
 7.  Add the Workload Identity annotation to the digester webhook Kubernetes
     service account:
 
-    ```bash
+    ```sh
     kubectl annotate serviceaccount digester-admin --namespace digester-system \
       "iam.gke.io/gcp-service-account=$GSA"
     ```

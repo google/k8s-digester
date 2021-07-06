@@ -22,7 +22,7 @@ metadata:
     digester/operation: webhook
     digester/system: 'yes'
 spec:
-  replicas: 3 # {"$kpt-set":"replicas"}
+  replicas: 3 # kpt-set: ${replicas}
   selector:
     matchLabels:
       control-plane: controller-manager
@@ -36,36 +36,36 @@ spec:
         digester/system: 'yes'
       annotations:
         container.seccomp.security.alpha.kubernetes.io/manager: runtime/default
-        prometheus.io/port: '8888' # {"$kpt-set":"metrics-port"}
+        prometheus.io/port: '8888' # kpt-set: ${metrics-port}
     spec:
       serviceAccountName: digester-admin
       nodeSelector:
         kubernetes.io/os: linux
       containers:
       - name: manager
-        image: ko://github.com/google/k8s-digester # {"$kpt-set":"image"}
+        image: ko://github.com/google/k8s-digester # kpt-set: ${image}
         args:
         - webhook
-        - --cert-dir=/certs # {"$kpt-set":"cert-dir-flag"}
-        - --disable-cert-rotation=false # {"$kpt-set":"disable-cert-rotation-flag"}
-        - --dry-run=false # {"$kpt-set":"dry-run-flag"}
-        - --health-addr=:9090 # {"$kpt-set":"health-addr-flag"}
-        - --metrics-addr=:8888 # {"$kpt-set":"metrics-addr-flag"}
-        - --offline=false # {"$kpt-set":"offline-flag"}
-        - --port=8443 # {"$kpt-set":"port-flag"}
+        - --cert-dir=/certs # kpt-set: --cert-dir=${cert-dir}
+        - --disable-cert-rotation=false # kpt-set: --disable-cert-rotation=${disable-cert-rotation}
+        - --dry-run=false # kpt-set: --dry-run=${dry-run}
+        - --health-addr=:9090 # kpt-set: --health-addr=:${health-port}
+        - --metrics-addr=:8888 # kpt-set: --metrics-addr=:${metrics-port}
+        - --offline=false # kpt-set: --offline=${offline}
+        - --port=8443 # kpt-set: --port=${port}
         ports:
         - name: webhook-server
           protocol: TCP
-          containerPort: 8443 # {"$kpt-set":"port"}
+          containerPort: 8443 # kpt-set: ${port}
         - name: metrics
           protocol: TCP
-          containerPort: 8888 # {"$kpt-set":"metrics-port"}
+          containerPort: 8888 # kpt-set: ${metrics-port}
         - name: healthz
           protocol: TCP
-          containerPort: 9090 # {"$kpt-set":"health-port"}
+          containerPort: 9090 # kpt-set: ${health-port}
         env:
         - name: DEBUG
-          value: 'false' # {"$kpt-set":"debug"}
+          value: 'false' # kpt-set: ${debug}
         - name: POD_NAME
           valueFrom:
             fieldRef:
@@ -77,13 +77,13 @@ spec:
               fieldPath: metadata.namespace
         resources:
           requests:
-            cpu: 100m # {"$kpt-set":"request-cpu"}
-            ephemeral-storage: 256Mi # {"$kpt-set":"request-ephemeral-storage"}
-            memory: 256Mi # {"$kpt-set":"request-memory"}
+            cpu: 100m # kpt-set: ${request-cpu}
+            ephemeral-storage: 256Mi # kpt-set: ${request-ephemeral-storage}
+            memory: 256Mi # kpt-set: ${request-memory}
         volumeMounts:
         - name: cert
           readOnly: true
-          mountPath: /certs # {"$kpt-set":"cert-dir"}
+          mountPath: /certs # kpt-set: ${cert-dir}
         livenessProbe:
           httpGet:
             port: healthz

@@ -75,68 +75,68 @@ credentials:
     [github.com/vdemeester/k8s-pkg-credentialprovider](https://pkg.go.dev/ub.com/vdemeester/k8s-pkg-credentialprovider)
     Go package.
 
-The client-side config function defaults to offline authentication, whereas the
+The client-side KRM function defaults to offline authentication, whereas the
 webhook defaults to online authentication. You can override the default
 authentication mode using the `--offline` command-line flag or the `OFFLINE`
 environment variable.
 
-## Config function offline authentication
+## KRM function offline authentication
 
-The config function uses offline authentication by default. By running digester
-as an
-[exec function](https://googlecontainertools.github.io/kpt/guides/producer/functions/exec/),
-the config function has access to container image registry credentials in the
-current environment, such as the current user's
+The KRM function uses offline authentication by default. By running digester
+as a local binary using the kpt `--exec` flag, or the kustomize `--exec-path`
+flag, the KRM function has access to container image registry credentials in
+the current environment, such as the current user's
 [Docker config file](https://github.com/google/go-containerregistry/blob/main/pkg/authn/README.md#the-config-file)
 and
 [credential helpers](https://docs.docker.com/engine/reference/commandline/login/#credential-helper-protocol).
 
-To run digester as an exec function, use the `--enable-exec` and `--execpath`
-flags:
+Run digester as a local binary using the kpt `--exec` flag:
 
-```bash
-kpt fn source [manifest file or directory] \
-  | kpt fn run --enable-exec --exec-path ./digester
+```sh
+kpt fn source [manifest directory] \
+  | kpt fn eval - --exec [path/to/digester]
 ```
 
 If your Docker config file contains your container image registry credentials
 and you do not need a credential helper, you can run digester in a container.
 Mount your Docker config file in the container using the `--mount` flag:
 
-```bash
-kpt fn source [manifest file or directory] \
-  | kpt fn run --network \
+```sh
+kpt fn source [manifest directory] \
+  | kpt fn eval - \
+    --as-current-user \
     --env DOCKER_CONFIG=/.docker \
+    --image gcr.io/cloud-solutions-images/k8s-digester \
     --mount type=bind,src="$HOME/.docker/config.json",dst=/.docker/config.json \
-    --image gcr.io/cloud-solutions-images/k8s-digester
+    --network
 ```
 
 The `--network` flag provides external network access to digester running in
 the container. Digester requires this to connect to the container image
 registry.
 
-## Config function online authentication
+## KRM function online authentication
 
-To use online authentication with the digester config function, set the
-`OFFLINE=false` environment variable. To use the kpt
-[exec runtime](https://googlecontainertools.github.io/kpt/guides/producer/functions/exec/),
-you can use this command:
+To use online authentication with the digester KRM function, set the
+`OFFLINE=false` environment variable. Use this command to run the digester KRM
+function as a local binary::
 
-```bash
-kpt fn source [manifest file or directory] \
-  | OFFLINE=false kpt fn run --enable-exec --exec-path ./digester
+```sh
+kpt fn source [manifest directory] \
+  | OFFLINE=false kpt fn eval - --exec ./digester
 ```
 
-If you use the kpt
-[container runtime](https://googlecontainertools.github.io/kpt/guides/producer/functions/container/),
-mount your kubeconfig file in the container:
+If you want to run the KRM function in a container, mount your kubeconfig file:
 
-```bash
-kpt fn source [manifest file or directory] \
-  | kpt fn run --network \
-    --env OFFLINE=false --env KUBECONFIG=/.kube/config \
+```sh
+kpt fn source [manifest directory] \
+  | kpt fn eval - \
+    --as-current-user \
+    --env KUBECONFIG=/.kube/config \
+    --env OFFLINE=false \
+    --image gcr.io/cloud-solutions-images/k8s-digester \
     --mount type=bind,src="$HOME/.kube/config",dst=/.kube/config \
-    --image gcr.io/cloud-solutions-images/k8s-digester
+    --network
 ```
 
 When using online authentication, digester connects to the Kubernetes cluster
@@ -170,14 +170,14 @@ the webhook using a
 
 1.  Set the `offline` flag value to `true` in the webhook Deployment manifest:
 
-    ```bash
-    kpt cfg set manifests/ offline true
+    ```sh
+    kpt fn eval manifests --image gcr.io/kpt-fn/apply-setters:v0.1.1 -- offline=true
     ```
 
 2.  Create a Docker config file containing map entries with usernames and
     passwords for your registries:
 
-    ```bash
+    ```sh
     REGISTRY_HOST=[your container image registry authority, e.g., registry.gitlab.com]
     REGISTRY_USERNAME=[your container image registry user name]
     REGISTRY_PASSWORD=[your container image registry password or token]
@@ -197,7 +197,7 @@ the webhook using a
 3.  Create a Secret in the `digester-system` namespace containing the config
     file:
 
-    ```bash
+    ```sh
     kubectl create secret generic docker-config --namespace digester-system \
       --from-file config.json=$(pwd)/docker-config.json
     ```
@@ -206,7 +206,7 @@ the webhook using a
     patch adds the Docker config file Secret as a volume, and mounts the volume
     on the Pods:
 
-    ```bash
+    ```sh
     cat << EOF > manifests/docker-config-patch.json
     [
       {
@@ -233,24 +233,10 @@ the webhook using a
     EOF
     ```
 
-4.  Create a kustomize manifest with the patch:
+4.  Add the patch to the kustomize manifest:
 
-    ```bash
-    cat << EOF > manifests/Kustomization
-    apiVersion: kustomize.config.k8s.io/v1beta1
-    kind: Kustomization
-    resources:
-    - cluster-role-binding.yaml
-    - cluster-role.yaml
-    - deployment.yaml
-    - inventory-template.yaml
-    - mutating-webhook-configuration.yaml
-    - namespace.yaml
-    - role-binding.yaml
-    - role.yaml
-    - secret.yaml
-    - service-account.yaml
-    - service.yaml
+    ```sh
+    cat << EOF >> manifests/kustomization.yaml
     patches:
     - path: docker-config-patch.json
       target:
@@ -263,8 +249,8 @@ the webhook using a
 
 4.  Deploy the webhook with the patch:
 
-    ```bash
-    kustomize build manifests/ | kpt live apply
+    ```sh
+    kustomize build manifests | kubectl apply -f -
     ```
 
 If you use offline authentication, you can remove the rule in the

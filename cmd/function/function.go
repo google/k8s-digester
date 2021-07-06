@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package function provides the command to run the config function.
+// Package function provides the command to run the KRM function.
 package function
 
 import (
@@ -35,7 +35,7 @@ import (
 	"github.com/google/k8s-digester/pkg/resolve"
 )
 
-// Cmd creates the config function command. This is the root command.
+// Cmd creates the KRM function command. This is the root command.
 func Cmd(ctx context.Context) *cobra.Command {
 	log := logging.CreateStdLogger("digester")
 	resourceFn := createResourceFn(ctx, log)
@@ -71,14 +71,14 @@ func createResourceFn(ctx context.Context, log logr.Logger) framework.ResourceLi
 }
 
 // customizeCmd modifies the kyaml function framework command by adding flags
-// that this config function needs, and to make it more user friendly.
+// that this KRM function needs, and to make it more user friendly.
 func customizeCmd(cmd *cobra.Command) {
 	cmd.Use = "digester"
 	cmd.Short = "Resolve container image tags to digests"
 	cmd.Long = "Digester replaces tags with digests for container and " +
 		"initContainer images in Kubernetes pod specs and pod template " +
 		"specs.\n\nIt can be used either as a mutating admission webhook, " +
-		"or as a client-side config function with kpt or kustomize."
+		"or as a client-side KRM function with kpt or kustomize."
 	cmd.Flags().String("kubeconfig", getKubeconfigDefault(),
 		"(optional) absolute path to the kubeconfig file. Requires offline=false.")
 	viper.BindPFlag("kubeconfig", cmd.Flags().Lookup("kubeconfig"))

@@ -20,14 +20,13 @@ webhooks:
 - name: digester-webhook-service.digester-system.svc
   admissionReviewVersions:
   - v1
-  - v1beta1
   clientConfig:
     service:
       name: digester-webhook-service
       namespace: digester-system
       path: /v1/mutate
     caBundle: Cg==
-  failurePolicy: Ignore # {"$kpt-set":"failure-policy"}
+  failurePolicy: Ignore # kpt-set: ${failure-policy}
   namespaceSelector:
     matchLabels:
       digest-resolution: enabled

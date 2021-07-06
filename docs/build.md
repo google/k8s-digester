@@ -7,26 +7,26 @@ Before you proceed, clone the Git repository and install the following tools:
 
 -   [Go distribution](https://golang.org/doc/install)
 -   [ko](https://github.com/google/ko#installation)
--   [kpt](https://googlecontainertools.github.io/kpt/installation/)
+-   [kpt](https://kpt.dev/installation/)
 
 ## Building binaries and container images
 
 -   Build the binary:
 
-    ```bash
+    ```sh
     go build .
     ```
 
 -  Build a container image and load it into your local Docker daemon:
 
-    ```bash
+    ```sh
     export GOROOT=$(go env GOROOT)
     ko publish --base-import-paths --local .
     ```
 
 -   Build a container image and publish it to Container Registry:
 
-    ```bash
+    ```sh
     export GOROOT=$(go env GOROOT)
     export KO_DOCKER_REPO=gcr.io/$(gcloud config get-value core/project)
     ko publish --base-import-paths .
@@ -42,7 +42,7 @@ base image from the `gcr.io/kaniko-project/executor` repository.
 
 1.  Set environment variables for `ko`:
 
-    ```bash
+    ```sh
     export GOROOT=$(go env GOROOT)
     export KO_DOCKER_REPO=gcr.io/$(gcloud config get-value core/project)
     ```
@@ -50,17 +50,17 @@ base image from the `gcr.io/kaniko-project/executor` repository.
 2.  Build and publish the webhook container image, and set the image name (with
     digest) in the webhook Deployment manifest:
 
-    ```bash
+    ```sh
     IMAGE=$(ko publish --base-import-paths .)
-    kpt cfg set manifests/ image $IMAGE
+    kpt fn eval manifests --image gcr.io/kpt-fn/apply-setters:v0.1.1 -- "image=$IMAGE"
     ```
 
 3.  (optional) If you use a Google Kubernetes Engine (GKE) cluster with
     [Workload Identity](workload-identity.md), and either Container Registry or
     Artifact Registry, annotate the digester Kubernetes service account:
 
-    ```bash
-    kpt cfg annotate manifests/ \
+    ```sh
+    kustomize cfg annotate manifests \
       --kind ServiceAccount \
       --name digester-admin \
       --namespace digester-system \
@@ -73,6 +73,6 @@ base image from the `gcr.io/kaniko-project/executor` repository.
 
 4.  Deploy the webhook:
 
-    ```bash
+    ```sh
     kpt live apply manifests/ --reconcile-timeout=3m --output=table
     ```

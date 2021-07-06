@@ -24,4 +24,4 @@ spec:
     digester/system: 'yes'
   ports:
   - port: 443
-    targetPort: 8443 # {"$kpt-set":"port"}
+    targetPort: 8443 # kpt-set: ${port}

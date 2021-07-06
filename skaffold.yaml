@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-apiVersion: skaffold/v2beta12
+apiVersion: skaffold/v2beta17
 kind: Config
 metadata:
   name: digester
@@ -23,19 +23,16 @@ build:
       buildCommand: ./build/skaffold.sh
       dependencies:
         paths:
-        - ".ko.yaml"
-        - "go.mod"
-        - "*.go"
-        - "cmd"
-        - "pkg"
-  local:
-    push: true
+        - .ko.yaml
+        - go.mod
+        - '*.go'
+        - cmd
+        - pkg
   tagPolicy:
     sha256: {}
+  local:
+    push: true
 deploy:
-  kpt:
-    dir: "."
-    live:
-      apply:
-        inventoryID: 6f6bbbb2-4879-45c6-a89c-2c0928f0f8a8
-        inventoryNamespace: digester-system
+  kustomize:
+    paths:
+    - manifests

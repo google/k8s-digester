@@ -12,18 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Skaffold uses this file when deploying with kpt.
+# Skaffold uses this file when deploying.
 
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+metadata:
+  name: digester-kustomize
+  annotations:
+    config.kubernetes.io/local-config: 'true'
 resources:
-- manifests/cluster-role-binding.yaml
-- manifests/cluster-role.yaml
-- manifests/deployment.yaml
-- manifests/mutating-webhook-configuration.yaml
-- manifests/namespace.yaml
-- manifests/role-binding.yaml
-- manifests/role.yaml
-- manifests/secret.yaml
-- manifests/service-account.yaml
-- manifests/service.yaml
+- cluster-role-binding.yaml
+- cluster-role.yaml
+- deployment.yaml
+- mutating-webhook-configuration.yaml
+- namespace.yaml
+- role-binding.yaml
+- role.yaml
+- secret.yaml
+- service-account.yaml
+- service.yaml

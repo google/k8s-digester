@@ -2,14 +2,14 @@
 
 Be sure to check out solutions to [common issues](common-issues.md).
 
-## Config function troubleshooting
+## KRM function troubleshooting
 
-If the config function fails to look up the image digest, you can increase the
+If the KRM function fails to look up the image digest, you can increase the
 logging verbosity by using the `DEBUG` environment variable:
 
-```bash
+```sh
 export DEBUG=true
-kpt fn ...
+kpt fn [...]
 ```
 
 ## Webhook troubleshooting
@@ -26,14 +26,14 @@ mode logging and increase the logging verbosity.
 1.  Set the `DEBUG` environment variable to `true` in the webhook Deployment
     manifest and redeploy the webhook:
 
-    ```bash
-    kpt cfg set manifests/ debug true
-    kpt live apply manifests/
+    ```sh
+    kpt fn eval manifests --image gcr.io/kpt-fn/apply-setters:v0.1.1 -- debug=true
+    kpt live apply manifests
     ```
 
 2.  Tail the webhook logs:
 
-    ```bash
+    ```sh
     kubectl logs --follow deployment/digester-controller-manager \
       --namespace digester-system --all-containers=true
     ```

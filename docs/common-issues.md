@@ -20,7 +20,7 @@ The steps below use the `SSL_CERT_DIR` environment variable.
 1.  Create a Kubernetes generic Secret containing you CA bundle certificates,
     called `my-ca-bundle`, in the `digester-system` namespace:
 
-    ```bash
+    ```sh
     kubectl create secret generic my-ca-bundle --namespace digester-system \
       --from-file=cert1=/path/to/cert1 --from-file=cert2=/path/to/cert2
     ```
@@ -64,7 +64,7 @@ The steps below use the `SSL_CERT_DIR` environment variable.
 
 3.  Apply the patch:
 
-    ```bash
+    ```sh
     kubectl patch deployment/digester-controller-manager -n digester-system \
       --type json --patch-file ca-bundle-patch.json
     ```
@@ -100,7 +100,7 @@ The steps below use the `HTTPS_PROXY` environment variable.
 
 2.  Apply the patch:
 
-    ```bash
+    ```sh
     kubectl patch deployment/digester-controller-manager -n digester-system \
       --type json --patch-file http-proxy-patch.json
     ```
