@@ -72,12 +72,12 @@ jobs:
       run: |
         mkdir -p ${HOME}/.local/bin
         curl -sSL "https://github.com/kubernetes-sigs/kubebuilder/releases/download/v${KUBEBUILDER_VERSION}/kubebuilder_${KUBEBUILDER_VERSION}_linux_amd64.tar.gz" | tar --strip-components 2 -xzC ${HOME}/.local/bin
+        echo "KUBEBUILDER_ASSETS=${HOME}/.local/bin" >> $GITHUB_ENV
 
     - name: Run integration tests
       run: |
         go test -v -timeout=10m ./cmd/webhook/...
       env:
-        KUBEBUILDER_ASSETS: ${{ env.HOME }}/.local/bin
         KUBEBUILDER_ATTACH_CONTROL_PLANE_OUTPUT: 'true'
         KUBEBUILDER_CONTROLPLANE_START_TIMEOUT: 180s
 
