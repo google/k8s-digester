@@ -11,73 +11,72 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
   name: digester-mutating-webhook-configuration
 webhooks:
-- name: digester-webhook-service.digester-system.svc
-  admissionReviewVersions:
-  - v1
-  clientConfig:
-    service:
-      name: digester-webhook-service
-      namespace: digester-system
-      path: /v1/mutate
-    caBundle: Cg==
-  failurePolicy: Ignore # kpt-set: ${failure-policy}
-  namespaceSelector:
-    matchLabels:
-      digest-resolution: enabled
-  reinvocationPolicy: IfNeeded
-  rules:
-  - resources:
-    - pods
-    - podtemplates
-    - replicationcontrollers
-    apiGroups:
-    - ''
-    apiVersions:
-    - v1
-    operations:
-    - CREATE
-    - UPDATE
-    scope: Namespaced
-  - resources:
-    - daemonsets
-    - deployments
-    - replicasets
-    - statefulsets
-    apiGroups:
-    - apps
-    apiVersions:
-    - v1
-    operations:
-    - CREATE
-    - UPDATE
-    scope: Namespaced
-  - resources:
-    - cronjobs
-    - jobs
-    apiGroups:
-    - batch
-    apiVersions:
-    - v1
-    - v1beta1
-    operations:
-    - CREATE
-    - UPDATE
-    scope: Namespaced
-  - resources:
-    - containersources
-    apiGroups:
-    - sources.knative.dev
-    apiVersions:
-    - v1
-    operations:
-    - CREATE
-    - UPDATE
-    scope: Namespaced
-  sideEffects: None
-  timeoutSeconds: 15
+  - name: digester-webhook-service.digester-system.svc
+    admissionReviewVersions:
+      - v1
+    clientConfig:
+      service:
+        name: digester-webhook-service
+        namespace: digester-system
+        path: /v1/mutate
+      caBundle: Cg==
+    failurePolicy: Ignore # kpt-set: ${failure-policy}
+    namespaceSelector:
+      matchLabels:
+        digest-resolution: enabled
+    reinvocationPolicy: IfNeeded
+    rules:
+      - resources:
+          - pods
+          - podtemplates
+          - replicationcontrollers
+        apiGroups:
+          - ''
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        scope: Namespaced
+      - resources:
+          - daemonsets
+          - deployments
+          - replicasets
+          - statefulsets
+        apiGroups:
+          - apps
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        scope: Namespaced
+      - resources:
+          - cronjobs
+          - jobs
+        apiGroups:
+          - batch
+        apiVersions:
+          - v1
+          - v1beta1
+        operations:
+          - CREATE
+          - UPDATE
+        scope: Namespaced
+      - resources:
+          - containersources
+        apiGroups:
+          - sources.knative.dev
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        scope: Namespaced
+    sideEffects: None
+    timeoutSeconds: 15
