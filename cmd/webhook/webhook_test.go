@@ -89,7 +89,7 @@ func Test_ResolvePublicGCRImage(t *testing.T) {
 			Containers: []corev1.Container{
 				{
 					Name:  "test-container",
-					Image: "gcr.io/google-containers/pause-amd64:3.2",
+					Image: "index.docker.io/docker/whalesay:latest",
 				},
 			},
 		},
@@ -107,7 +107,7 @@ func Test_ResolvePublicGCRImage(t *testing.T) {
 		t.Fatalf("could not get test pod: %+v", err)
 	}
 
-	wantImage := "gcr.io/google-containers/pause-amd64:3.2@sha256:4a1c4b21597c1b4415bdbecb28a3296c6b5e23ca4f9feeb599860a1dac6a0108"
+	wantImage := "index.docker.io/docker/whalesay:latest@sha256:178598e51a26abbc958b8a2e48825c90bc22e641de3d31e18aaf55f3258ba93b"
 	gotImage := podOut.Spec.Containers[0].Image
 	if wantImage != gotImage {
 		t.Errorf("wanted %s, got %s", wantImage, gotImage)
