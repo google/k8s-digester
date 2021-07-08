@@ -20,6 +20,7 @@ webhooks:
 - name: digester-webhook-service.digester-system.svc
   admissionReviewVersions:
   - v1
+  - v1beta1
   clientConfig:
     service:
       name: digester-webhook-service

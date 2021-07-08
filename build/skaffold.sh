@@ -34,6 +34,9 @@ fi
 
 image_tar=$(mktemp)
 
+KO_DOCKER_REPO=${KO_DOCKER_REPO:-$SKAFFOLD_DEFAULT_REPO}
+export KO_DOCKER_REPO
+
 ko publish --tarball $image_tar --push=false .
 
 crane push $image_tar $IMAGE
