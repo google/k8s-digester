@@ -93,8 +93,7 @@ and
 Run digester as a local binary using the kpt `--exec` flag:
 
 ```sh
-kpt fn source [manifest directory] \
-  | kpt fn eval - --exec [path/to/digester]
+kpt fn eval [manifest directory] --exec [path/to/digester]
 ```
 
 If your Docker config file contains your container image registry credentials
@@ -102,13 +101,12 @@ and you do not need a credential helper, you can run digester in a container.
 Mount your Docker config file in the container using the `--mount` flag:
 
 ```sh
-kpt fn source [manifest directory] \
-  | kpt fn eval - \
-    --as-current-user \
-    --env DOCKER_CONFIG=/.docker \
-    --image gcr.io/cloud-solutions-images/k8s-digester \
-    --mount type=bind,src="$HOME/.docker/config.json",dst=/.docker/config.json \
-    --network
+kpt fn eval [manifest directory] \
+  --as-current-user \
+  --env DOCKER_CONFIG=/.docker \
+  --image gcr.io/cloud-solutions-images/k8s-digester \
+  --mount type=bind,src="$HOME/.docker/config.json",dst=/.docker/config.json \
+  --network
 ```
 
 The `--network` flag provides external network access to digester running in
@@ -122,21 +120,19 @@ To use online authentication with the digester KRM function, set the
 function as a local binary::
 
 ```sh
-kpt fn source [manifest directory] \
-  | OFFLINE=false kpt fn eval - --exec ./digester
+OFFLINE=false kpt fn eval [manifest directory] --exec ./digester
 ```
 
 If you want to run the KRM function in a container, mount your kubeconfig file:
 
 ```sh
-kpt fn source [manifest directory] \
-  | kpt fn eval - \
-    --as-current-user \
-    --env KUBECONFIG=/.kube/config \
-    --env OFFLINE=false \
-    --image gcr.io/cloud-solutions-images/k8s-digester \
-    --mount type=bind,src="$HOME/.kube/config",dst=/.kube/config \
-    --network
+kpt fn eval [manifest directory] \
+  --as-current-user \
+  --env KUBECONFIG=/.kube/config \
+  --env OFFLINE=false \
+  --image gcr.io/cloud-solutions-images/k8s-digester \
+  --mount type=bind,src="$HOME/.kube/config",dst=/.kube/config \
+  --network
 ```
 
 When using online authentication, digester connects to the Kubernetes cluster
@@ -171,7 +167,7 @@ the webhook using a
 1.  Set the `offline` flag value to `true` in the webhook Deployment manifest:
 
     ```sh
-    kpt fn eval manifests --image gcr.io/kpt-fn/apply-setters:v0.1.1 -- offline=true
+    kpt fn eval manifests --image gcr.io/kpt-fn/apply-setters:v0.1 -- offline=true
     ```
 
 2.  Create a Docker config file containing map entries with usernames and

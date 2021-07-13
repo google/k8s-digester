@@ -22,7 +22,3 @@ info:
   description: >-
     The digester mutating admission webhook resolves tags to digests for
     container and initContainer images in Kubernetes Pod and Pod template specs.
-inventory:
-  inventoryID: 6f6bbbb2-4879-45c6-a89c-2c0928f0f8a8
-  namespace: digester-system
-  name: digester-inventory

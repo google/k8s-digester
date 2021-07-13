@@ -16,6 +16,10 @@ apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
   name: digester-mutating-webhook-configuration
+  labels:
+    control-plane: controller-manager
+    digester/operation: webhook
+    digester/system: 'yes'
 webhooks:
 - name: digester-webhook-service.digester-system.svc
   admissionReviewVersions:

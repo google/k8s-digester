@@ -59,22 +59,20 @@ the container image. You can use digester to deploy container images by digest.
     ```sh
     VERSION=v0.1.4
 
-    curl -Lo digester "https://github.com/google/k8s-digester/releases/download/$VERSION/digester_$(uname -s)_$(uname -m)"
+    curl -Lo digester "https://github.com/google/k8s-digester/releases/download/${VERSION}/digester_$(uname -s)_$(uname -m)"
 
     chmod +x digester
     ```
 
 2.  [Install kpt](https://kpt.dev/installation/) v1.0.0-beta.1 or later, and/or
-    [install kustomize](https://kubectl.docs.kubernetes.io/installation/kustomize/)
-    v4.2.0 or later.
+    [install kustomize](https://kubectl.docs.kubernetes.io/installation/kustomize/).
 
 3.  Run the digester KRM function:
 
     -   Using kpt:
 
         ```sh
-        kpt fn source [manifest directory] \
-          | kpt fn eval - --exec ./digester
+        kpt fn eval [manifest directory] --exec ./digester
         ```
 
     -  Using kustomize:
@@ -117,13 +115,19 @@ You need a Kubernetes cluster version 1.16 or later.
     kpt pkg get https://github.com/google/k8s-digester.git/manifests@$VERSION manifests
     ```
 
-4.  Deploy the webhook:
+4.  Set up inventory tracking for the webhook kpt package:
+
+    ```sh
+    kpt live init manifests
+    ```
+
+5.  Deploy the webhook:
 
     ```sh
     kpt live apply manifests --reconcile-timeout=3m --output=table
     ```
 
-5.  Add the `digest-resolution: enabled` label to namespaces where you want the
+6.  Add the `digest-resolution: enabled` label to namespaces where you want the
     webhook to resolve tags to digests:
 
     ```sh

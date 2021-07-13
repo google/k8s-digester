@@ -104,13 +104,13 @@ the webhook to a Kubernetes cluster on source code changes.
 4.  (optional) Enable debug mode for more verbose logging:
 
     ```sh
-    kpt fn eval manifests --image gcr.io/kpt-fn/apply-setters:v0.1.1 -- debug=true
+    kpt fn eval manifests --image gcr.io/kpt-fn/apply-setters:v0.1 -- debug=true
     ```
 
 5.  (optional) Set `replicas` to 1:
 
     ```sh
-    kpt fn eval manifests --image gcr.io/kpt-fn/apply-setters:v0.1.1 -- replicas=1
+    kpt fn eval manifests --image gcr.io/kpt-fn/apply-setters:v0.1 -- replicas=1
     ```
 
 6.  Deploy the webhook and start the watch loop:

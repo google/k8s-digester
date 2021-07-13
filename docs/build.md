@@ -52,7 +52,7 @@ base image from the `gcr.io/kaniko-project/executor` repository.
 
     ```sh
     IMAGE=$(ko publish --base-import-paths .)
-    kpt fn eval manifests --image gcr.io/kpt-fn/apply-setters:v0.1.1 -- "image=$IMAGE"
+    kpt fn eval manifests --image gcr.io/kpt-fn/apply-setters:v0.1 -- "image=$IMAGE"
     ```
 
 3.  (optional) If you use a Google Kubernetes Engine (GKE) cluster with
@@ -71,8 +71,14 @@ base image from the `gcr.io/kaniko-project/executor` repository.
     `digester-admin` in the namespace `digester-system` can impersonate the
     Google service account `$GSA`.
 
-4.  Deploy the webhook:
+4.  Set up inventory tracking for the webhook kpt package:
 
     ```sh
-    kpt live apply manifests/ --reconcile-timeout=3m --output=table
+    kpt live init manifests
+    ```
+
+5.  Deploy the webhook:
+
+    ```sh
+    kpt live apply manifests --reconcile-timeout=3m --output=table
     ```

@@ -157,13 +157,13 @@ jobs:
     - name: Set image name in Kubernetes resource spec
       run: |
         kpt fn eval manifests \
-          --image gcr.io/kpt-fn/apply-setters:v0.1.1@sha256:d2a0219b24a47ebb4bf568d3ccf5bb0e7be2f3f94b28b0c3b1bed011a51d7c35 \
+          --image gcr.io/kpt-fn/apply-setters:v0.1@sha256:d2a0219b24a47ebb4bf568d3ccf5bb0e7be2f3f94b28b0c3b1bed011a51d7c35 \
           -- \
           "image=$REGISTRY/$IMAGE_REPO:$VERSION@${IMAGE_NAME_WITH_DIGEST##*@}"
 
     - name: Update version in readme
       run: |
-        sed -i~ "s/VERSION=.*/VERSION=$VERSION/" README.md
+        sed -i "s/VERSION=.*/VERSION=$VERSION/" README.md
 
     - name: Commit and push to release branch with new version and image ref
       run: |
@@ -246,7 +246,7 @@ jobs:
         git remote update
         git checkout main
         git pull --no-edit --no-rebase --strategy-option=theirs origin
-        sed -i~ "s/VERSION=.*/VERSION=$VERSION/" README.md
+        sed -i "s/VERSION=.*/VERSION=$VERSION/" README.md
         git add README.md
         git commit -m "Update version in readme to $VERSION"
         git pull --no-edit --no-rebase --strategy-option=ours origin

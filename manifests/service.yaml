@@ -17,6 +17,10 @@ kind: Service
 metadata:
   name: digester-webhook-service
   namespace: digester-system
+  labels:
+    control-plane: controller-manager
+    digester/operation: webhook
+    digester/system: 'yes'
 spec:
   selector:
     control-plane: controller-manager

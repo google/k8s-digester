@@ -27,7 +27,7 @@ mode logging and increase the logging verbosity.
     manifest and redeploy the webhook:
 
     ```sh
-    kpt fn eval manifests --image gcr.io/kpt-fn/apply-setters:v0.1.1 -- debug=true
+    kpt fn eval manifests --image gcr.io/kpt-fn/apply-setters:v0.1 -- debug=true
     kpt live apply manifests
     ```
 

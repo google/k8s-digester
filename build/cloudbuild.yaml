@@ -140,7 +140,7 @@ steps:
 substitutions:
   _IMAGE_REPO: gcr.io/$PROJECT_ID
   _KO_VERSION: '0.8.3'
-  _KPT_APPLY_SETTERS_VERSION: '0.1.1'
+  _KPT_APPLY_SETTERS_VERSION: '0.1'
   _KPT_VERSION: '1.0.0-beta.1'
   _KUBEBUILDER_VERSION: '2.3.2'
   _SECRET_NAME: projects/$PROJECT_ID/secrets/$REPO_NAME-deploy-key/versions/latest
