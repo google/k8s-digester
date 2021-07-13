@@ -12,7 +12,7 @@ It replaces container image references that use tags:
 ```yaml
 spec:
   containers:
-  - image: gcr.io/google-samples/hello-app:1.0
+  - image: gcr.io/google-containers/echoserver:1.10
 ```
 
 With references that use the image digest:
@@ -20,7 +20,7 @@ With references that use the image digest:
 ```yaml
 spec:
   containers:
-  - image: gcr.io/google-samples/hello-app:1.0@sha256:95214fdf834ae96b1969e38c9768f5180366fdf430e5e31b39f7defb584698fb
+  - image: gcr.io/google-containers/echoserver:1.10@sha256:cb5c1bddd1b5665e1867a7fa1b5fa843a47ee433bbb75d4293888b71def53229
 ```
 
 Digester can run either as a
