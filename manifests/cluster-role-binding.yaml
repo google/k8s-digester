@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -23,6 +22,6 @@ roleRef:
   kind: ClusterRole
   apiGroup: rbac.authorization.k8s.io
 subjects:
-- name: digester-admin
-  namespace: digester-system
-  kind: ServiceAccount
+  - name: digester-admin
+    namespace: digester-system
+    kind: ServiceAccount
