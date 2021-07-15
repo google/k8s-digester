@@ -35,5 +35,5 @@ mode logging and increase the logging verbosity.
 
     ```sh
     kubectl logs --follow deployment/digester-controller-manager \
-      --namespace digester-system --all-containers=true
+        --namespace digester-system --all-containers=true
     ```

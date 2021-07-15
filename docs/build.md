@@ -61,10 +61,10 @@ base image from the `gcr.io/kaniko-project/executor` repository.
 
     ```sh
     kustomize cfg annotate manifests \
-      --kind ServiceAccount \
-      --name digester-admin \
-      --namespace digester-system \
-      --kv "iam.gke.io/gcp-service-account=$GSA"
+        --kind ServiceAccount \
+        --name digester-admin \
+        --namespace digester-system \
+        --kv "iam.gke.io/gcp-service-account=$GSA"
     ```
 
     This annotation informs GKE that the Kubernetes service account

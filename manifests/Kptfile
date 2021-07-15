@@ -21,4 +21,5 @@ metadata:
 info:
   description: >-
     The digester mutating admission webhook resolves tags to digests for
-    container and initContainer images in Kubernetes Pod and Pod template specs.
+    container and init container images in Kubernetes Pod and Pod template
+    specs.

@@ -18,11 +18,11 @@ component.
 ## Injected containers
 
 A drawback of the digester KRM function is that it will not resolve digests
-for container and initContainer images injected by other mutating admission
+for container and init container images injected by other mutating admission
 webhooks, such as the
 [Istio sidecar injector](https://istio.io/latest/docs/setup/additional-setup/sidecar-injection/#automatic-sidecar-injection).
 
-The digester webhook resolves digests for container and initContainer images
+The digester webhook resolves digests for container and init container images
 injected by other mutating webhooks because its
 [`reinvocationPolicy` is set to `IfNeeded`](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#reinvocation-policy).
 This policy means that the API server executes the digester webhook again if

@@ -22,7 +22,7 @@ The steps below use the `SSL_CERT_DIR` environment variable.
 
     ```sh
     kubectl create secret generic my-ca-bundle --namespace digester-system \
-      --from-file=cert1=/path/to/cert1 --from-file=cert2=/path/to/cert2
+        --from-file=cert1=/path/to/cert1 --from-file=cert2=/path/to/cert2
     ```
 
 2.  Create a JSON patch file called `ca-bundle-patch.json` that adds the
@@ -66,7 +66,7 @@ The steps below use the `SSL_CERT_DIR` environment variable.
 
     ```sh
     kubectl patch deployment/digester-controller-manager -n digester-system \
-      --type json --patch-file ca-bundle-patch.json
+        --type json --patch-file ca-bundle-patch.json
     ```
 
 Ref: https://knative.dev/docs/serving/tag-resolution/#custom-certificates
@@ -102,7 +102,7 @@ The steps below use the `HTTPS_PROXY` environment variable.
 
     ```sh
     kubectl patch deployment/digester-controller-manager -n digester-system \
-      --type json --patch-file http-proxy-patch.json
+        --type json --patch-file http-proxy-patch.json
     ```
 
 Note that this will not work for proxies that require NTLM authentication.

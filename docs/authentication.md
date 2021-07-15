@@ -101,12 +101,13 @@ and you do not need a credential helper, you can run digester in a container.
 Mount your Docker config file in the container using the `--mount` flag:
 
 ```sh
+VERSION=v0.1.5
 kpt fn eval [manifest directory] \
-  --as-current-user \
-  --env DOCKER_CONFIG=/.docker \
-  --image gcr.io/cloud-solutions-images/k8s-digester \
-  --mount type=bind,src="$HOME/.docker/config.json",dst=/.docker/config.json \
-  --network
+    --as-current-user \
+    --env DOCKER_CONFIG=/.docker \
+    --image ghcr.io/google/k8s-digester:$VERSION \
+    --mount type=bind,src="$HOME/.docker/config.json",dst=/.docker/config.json \
+    --network
 ```
 
 The `--network` flag provides external network access to digester running in
@@ -126,13 +127,14 @@ OFFLINE=false kpt fn eval [manifest directory] --exec ./digester
 If you want to run the KRM function in a container, mount your kubeconfig file:
 
 ```sh
+VERSION=v0.1.5
 kpt fn eval [manifest directory] \
-  --as-current-user \
-  --env KUBECONFIG=/.kube/config \
-  --env OFFLINE=false \
-  --image gcr.io/cloud-solutions-images/k8s-digester \
-  --mount type=bind,src="$HOME/.kube/config",dst=/.kube/config \
-  --network
+    --as-current-user \
+    --env KUBECONFIG=/.kube/config \
+    --env OFFLINE=false \
+    --image ghcr.io/google/k8s-digester:$VERSION \
+    --mount type=bind,src="$HOME/.kube/config",dst=/.kube/config \
+    --network
 ```
 
 When using online authentication, digester connects to the Kubernetes cluster
@@ -195,7 +197,7 @@ the webhook using a
 
     ```sh
     kubectl create secret generic docker-config --namespace digester-system \
-      --from-file config.json=$(pwd)/docker-config.json
+        --from-file config.json=$(pwd)/docker-config.json
     ```
 
 4.  Create a patch file for the `webhook-controller-manager` Deployment. The
@@ -232,7 +234,7 @@ the webhook using a
 4.  Add the patch to the kustomize manifest:
 
     ```sh
-    cat << EOF >> manifests/kustomization.yaml
+    cat << EOF >> manifests/Kustomization
     patches:
     - path: docker-config-patch.json
       target:
@@ -246,7 +248,7 @@ the webhook using a
 4.  Deploy the webhook with the patch:
 
     ```sh
-    kustomize build manifests | kubectl apply -f -
+    kubectl apply --kustomize manifests
     ```
 
 If you use offline authentication, you can remove the rule in the

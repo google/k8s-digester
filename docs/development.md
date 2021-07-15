@@ -20,14 +20,14 @@ the webhook to a Kubernetes cluster on source code changes.
     mkdir -p build/cert
 
     openssl req -x509 -newkey rsa:4096 -nodes -sha256 -days 3650 \
-      -keyout build/cert/tls.key -out build/cert/tls.crt -extensions san \
-      -config \
-      <(echo "[req]";
-        echo distinguished_name=req;
-        echo "[san]";
-        echo subjectAltName=DNS:localhost,IP:127.0.0.1
-        ) \
-      -subj '/CN=localhost'
+        -keyout build/cert/tls.key -out build/cert/tls.crt -extensions san \
+        -config \
+        <(echo "[req]";
+          echo distinguished_name=req;
+          echo "[san]";
+          echo subjectAltName=DNS:localhost,IP:127.0.0.1
+         ) \
+        -subj '/CN=localhost'
     ```
 
 2.  Run the webhook locally:
@@ -51,9 +51,9 @@ the webhook to a Kubernetes cluster on source code changes.
 
     ```sh
     curl -sk -X POST -H "Content-Type: application/json" \
-      --data @build/test/request.json \
-      https://localhost:8443/v1/mutate \
-      | jq -r '.response.patch' | base64 --decode | jq
+        --data @build/test/request.json \
+        https://localhost:8443/v1/mutate \
+        | jq -r '.response.patch' | base64 --decode | jq
     ```
 
     The output is the list of JSON patches that the API server admission
@@ -65,7 +65,7 @@ the webhook to a Kubernetes cluster on source code changes.
     export PROJECT_ID=$(gcloud config get-value core/project)
 
     curl -sL "https://github.com/google/go-containerregistry/releases/download/v0.5.1/go-containerregistry_$(uname -s)_$(uname -m).tar.gz" \
-      | tar -zxf - crane gcrane
+        | tar -zxf - crane gcrane
 
     ./crane cp gcr.io/google-samples/hello-app:1.0 gcr.io/$PROJECT_ID/hello-app:1.0
     ```
@@ -75,9 +75,9 @@ the webhook to a Kubernetes cluster on source code changes.
 
     ```sh
     curl -sk -X POST -H "Content-Type: application/json" \
-      --data @<(envsubst < build/test/request-authn.json) \
-      https://localhost:8443/v1/mutate \
-      | jq -r '.response.patch' | base64 --decode | jq
+        --data @<(envsubst < build/test/request-authn.json) \
+        https://localhost:8443/v1/mutate \
+        | jq -r '.response.patch' | base64 --decode | jq
     ```
 
 ## Redeploying the webhook to a Kubernetes cluster on source code changes

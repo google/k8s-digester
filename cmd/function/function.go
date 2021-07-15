@@ -76,7 +76,7 @@ func customizeCmd(cmd *cobra.Command) {
 	cmd.Use = "digester"
 	cmd.Short = "Resolve container image tags to digests"
 	cmd.Long = "Digester replaces tags with digests for container and " +
-		"initContainer images in Kubernetes pod specs and pod template " +
+		"init container images in Kubernetes pod specs and pod template " +
 		"specs.\n\nIt can be used either as a mutating admission webhook, " +
 		"or as a client-side KRM function with kpt or kustomize."
 	cmd.Flags().String("kubeconfig", getKubeconfigDefault(),
