@@ -24,7 +24,7 @@ The digester webhook requires Kubernetes v1.16 or later.
 3.  Fetch this package:
 
     ```sh
-    VERSION=v0.1.5
+    VERSION=v0.1.7
     kpt pkg get https://github.com/google/k8s-digester.git/manifests@$VERSION manifests
     ```
 
@@ -59,7 +59,7 @@ unable to use kpt, you can deploy the digester using kubectl:
 ```sh
 git clone https://github.com/google/k8s-digester.git digester
 cd digester
-VERSION=v0.1.5
+VERSION=v0.1.7
 git checkout $VERSION
 kubectl apply -f manifests/namespace.yaml
 kubectl apply -f manifests/

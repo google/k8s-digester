@@ -57,7 +57,7 @@ the container image. You can use digester to deploy container images by digest.
     Alternatively, you can download the latest version using these commands:
 
     ```sh
-    VERSION=v0.1.6
+    VERSION=v0.1.7
     curl -Lo digester "https://github.com/google/k8s-digester/releases/download/${VERSION}/digester_$(uname -s)_$(uname -m)"
     chmod +x digester
     ```
