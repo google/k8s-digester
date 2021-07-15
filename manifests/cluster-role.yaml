@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -19,42 +18,42 @@ metadata:
   labels:
     digester/system: 'yes'
 rules:
-- resources:
-  - secrets # access to imagePullSecrets
-  - serviceaccounts # access to imagepullSecrets
-  apiGroups:
-  - ''
-  verbs:
-  - get
-  - list
-  - watch
-- resources:
-  - customresourcedefinitions
-  apiGroups:
-  - apiextensions.k8s.io
-  verbs:
-  - get
-  - list
-  - watch
-- resources:
-  - mutatingwebhookconfigurations
-  apiGroups:
-  - admissionregistration.k8s.io
-  verbs:
-  - get
-  - list
-  - watch
-- resources:
-  - mutatingwebhookconfigurations
-  apiGroups:
-  - admissionregistration.k8s.io
-  resourceNames:
-  - digester-mutating-webhook-configuration
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
+  - resources:
+      - secrets # access to imagePullSecrets
+      - serviceaccounts # access to imagepullSecrets
+    apiGroups:
+      - ''
+    verbs:
+      - get
+      - list
+      - watch
+  - resources:
+      - customresourcedefinitions
+    apiGroups:
+      - apiextensions.k8s.io
+    verbs:
+      - get
+      - list
+      - watch
+  - resources:
+      - mutatingwebhookconfigurations
+    apiGroups:
+      - admissionregistration.k8s.io
+    verbs:
+      - get
+      - list
+      - watch
+  - resources:
+      - mutatingwebhookconfigurations
+    apiGroups:
+      - admissionregistration.k8s.io
+    resourceNames:
+      - digester-mutating-webhook-configuration
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch

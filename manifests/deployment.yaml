@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -42,67 +41,67 @@ spec:
       nodeSelector:
         kubernetes.io/os: linux
       containers:
-      - name: manager
-        image: ko://github.com/google/k8s-digester # kpt-set: ${image}
-        args:
-        - webhook
-        - --cert-dir=/certs # kpt-set: --cert-dir=${cert-dir}
-        - --disable-cert-rotation=false # kpt-set: --disable-cert-rotation=${disable-cert-rotation}
-        - --dry-run=false # kpt-set: --dry-run=${dry-run}
-        - --health-addr=:9090 # kpt-set: --health-addr=:${health-port}
-        - --metrics-addr=:8888 # kpt-set: --metrics-addr=:${metrics-port}
-        - --offline=false # kpt-set: --offline=${offline}
-        - --port=8443 # kpt-set: --port=${port}
-        ports:
-        - name: webhook-server
-          protocol: TCP
-          containerPort: 8443 # kpt-set: ${port}
-        - name: metrics
-          protocol: TCP
-          containerPort: 8888 # kpt-set: ${metrics-port}
-        - name: healthz
-          protocol: TCP
-          containerPort: 9090 # kpt-set: ${health-port}
-        env:
-        - name: DEBUG
-          value: 'false' # kpt-set: ${debug}
-        - name: POD_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
-        - name: POD_NAMESPACE
-          valueFrom:
-            fieldRef:
-              apiVersion: v1
-              fieldPath: metadata.namespace
-        resources:
-          requests:
-            cpu: 100m # kpt-set: ${request-cpu}
-            ephemeral-storage: 256Mi # kpt-set: ${request-ephemeral-storage}
-            memory: 256Mi # kpt-set: ${request-memory}
-        volumeMounts:
-        - name: cert
-          readOnly: true
-          mountPath: /certs # kpt-set: ${cert-dir}
-        livenessProbe:
-          httpGet:
-            port: healthz
-            path: /healthz
-        readinessProbe:
-          httpGet:
-            port: healthz
-            path: /readyz
-        securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - all
-          readOnlyRootFilesystem: true
-          runAsGroup: 65532
-          runAsNonRoot: true
-          runAsUser: 65532
+        - name: manager
+          image: ghcr.io/google/k8s-digester:v0.1.6@sha256:5a8e9b25b7464b550c959937c412b1451004ff8d426b23ea5e8f31a5cc497a4d # kpt-set: ${image}
+          args:
+            - webhook
+            - --cert-dir=/certs # kpt-set: --cert-dir=${cert-dir}
+            - --disable-cert-rotation=false # kpt-set: --disable-cert-rotation=${disable-cert-rotation}
+            - --dry-run=false # kpt-set: --dry-run=${dry-run}
+            - --health-addr=:9090 # kpt-set: --health-addr=:${health-port}
+            - --metrics-addr=:8888 # kpt-set: --metrics-addr=:${metrics-port}
+            - --offline=false # kpt-set: --offline=${offline}
+            - --port=8443 # kpt-set: --port=${port}
+          ports:
+            - name: webhook-server
+              protocol: TCP
+              containerPort: 8443 # kpt-set: ${port}
+            - name: metrics
+              protocol: TCP
+              containerPort: 8888 # kpt-set: ${metrics-port}
+            - name: healthz
+              protocol: TCP
+              containerPort: 9090 # kpt-set: ${health-port}
+          env:
+            - name: DEBUG
+              value: 'false' # kpt-set: ${debug}
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+          resources:
+            requests:
+              cpu: 100m # kpt-set: ${request-cpu}
+              ephemeral-storage: 256Mi # kpt-set: ${request-ephemeral-storage}
+              memory: 256Mi # kpt-set: ${request-memory}
+          volumeMounts:
+            - name: cert
+              readOnly: true
+              mountPath: /certs # kpt-set: ${cert-dir}
+          livenessProbe:
+            httpGet:
+              port: healthz
+              path: /healthz
+          readinessProbe:
+            httpGet:
+              port: healthz
+              path: /readyz
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - all
+            readOnlyRootFilesystem: true
+            runAsGroup: 65532
+            runAsNonRoot: true
+            runAsUser: 65532
       volumes:
-      - name: cert
-        secret:
-          defaultMode: 420
-          secretName: digester-webhook-server-cert
+        - name: cert
+          secret:
+            defaultMode: 420
+            secretName: digester-webhook-server-cert
