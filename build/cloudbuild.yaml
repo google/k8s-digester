@@ -46,17 +46,23 @@ steps:
     echo "${TAG_NAME}" > pkg/version/version.txt
     export GOFLAGS="-v -trimpath -ldflags=-s"
     /workspace/.gopath/bin/ko publish \
-        --base-import-paths \
-        --platform linux/amd64,linux/arm64 \
-        --tags $BUILD_ID,$COMMIT_SHA,${TAG_NAME} .
+      --base-import-paths \
+      --image-label org.opencontainers.image.licenses="Apache-2.0" \
+      --image-label org.opencontainers.image.revision="${COMMIT_SHA}" \
+      --image-label org.opencontainers.image.source="https://github.com/google/${REPO_NAME}" \
+      --image-label org.opencontainers.image.title="${REPO_NAME}" \
+      --image-label org.opencontainers.image.vendor="Google LLC" \
+      --image-label org.opencontainers.image.version="${TAG_NAME}" \
+      --platform linux/amd64,linux/arm64 \
+      --tags ${TAG_NAME} .
   env:
-  - 'BUILD_ID=$BUILD_ID'
   - 'COMMIT_SHA=$COMMIT_SHA'
   - 'KO_DOCKER_REPO=$_IMAGE_REPO'
+  - 'REPO_NAME=$REPO_NAME'
   - 'TAG_NAME=$TAG_NAME'
 
 substitutions:
   _IMAGE_REPO: gcr.io/$PROJECT_ID
   _KO_VERSION: '0.8.3'
 
-timeout: 1800s
+timeout: 900s
