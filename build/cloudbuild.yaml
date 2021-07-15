@@ -22,7 +22,7 @@ options:
 
 steps:
 - id: env
-  name: gcr.io/cloud-builders/go
+  name: gcr.io/cloud-builders/go:1.16
   args:
   - env
 
@@ -37,7 +37,7 @@ steps:
     curl -sSL "https://github.com/google/ko/releases/download/v${_KO_VERSION}/ko_${_KO_VERSION}_Linux_x86_64.tar.gz" | tar -xzC /workspace/.gopath/bin ko
 
 - id: image
-  name: gcr.io/cloud-builders/go
+  name: gcr.io/cloud-builders/go:1.16
   entrypoint: sh
   args:
   - -eu

@@ -163,14 +163,14 @@ jobs:
 
     - name: Update version in readme
       run: |
-        sed -i "s/VERSION=.*/VERSION=$VERSION/" README.md
+        sed -i "s/VERSION=.*/VERSION=$VERSION/" README.md manifests/README.md docs/authentication.md
 
     - name: Commit and push to release branch with new version and image ref
       run: |
-        git add README.md manifests
+        git add README.md manifests docs/authentication.md
         git config user.name github-actions
         git config user.email github-actions@github.com
-        git commit -m "Update image version in manifest to $VERSION"
+        git commit -m "Update image version to $VERSION"
         git push --force origin release-$VERSION
 
     - name: Set release env vars
@@ -246,8 +246,8 @@ jobs:
         git remote update
         git checkout main
         git pull --no-edit --no-rebase --strategy-option=theirs origin
-        sed -i "s/VERSION=.*/VERSION=$VERSION/" README.md
-        git add README.md
-        git commit -m "Update version in readme to $VERSION"
+        sed -i "s/VERSION=.*/VERSION=$VERSION/" README.md manifests/README.md docs/authentication.md
+        git add README.md manifests/README.md docs/authentication.md
+        git commit -m "Update version in docs to $VERSION"
         git pull --no-edit --no-rebase --strategy-option=ours origin
         git push origin main
