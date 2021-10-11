@@ -1,6 +1,6 @@
-# Digester webhook kpt package
+# Digester webhook package
 
-kpt package for the [digester](https://github.com/google/k8s-digester)
+Package for the [digester](https://github.com/google/k8s-digester)
 Kubernetes mutating admission webhook.
 
 The digester mutating admission webhook resolves tags to digests for container
@@ -54,7 +54,7 @@ see the documentation on
 ## Deploying using kubectl
 
 We recommend deploying the webhook using kpt as described above. If you are
-unable to use kpt, you can deploy the digester using kubectl:
+unable to use kpt, you can deploy the digester webhook using kubectl:
 
 ```sh
 git clone https://github.com/google/k8s-digester.git digester

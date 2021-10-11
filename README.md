@@ -91,7 +91,7 @@ the container image. You can use digester to deploy container images by digest.
 ## Deploying the webhook
 
 Install the digester webhook in your Kubernetes cluster by following the steps
-in the [kpt package documentation](manifests/README.md).
+in the [package documentation](manifests/README.md).
 
 ## Documentation
 
