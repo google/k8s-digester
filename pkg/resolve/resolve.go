@@ -87,7 +87,8 @@ func (f *ImageTagFilter) filterImage(n *yaml.RNode) error {
 	}
 	image := yaml.GetValue(imageNode)
 	if strings.Contains(image, "@") {
-		return nil // already has digest, skip
+                //Change the image in case the tag was pointed to new digest and always pick most recent sha256 value from registry
+                image = strings.Split(image, "@")[0]
 	}
 	digest, err := resolveTagFn(image, f.Keychain)
 	if err != nil {
