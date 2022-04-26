@@ -19,7 +19,7 @@ metadata:
   labels:
     control-plane: controller-manager
     digester/operation: webhook
-    digester/system: 'yes'
+    digester/system: "yes"
 webhooks:
 - name: digester-webhook-service.digester-system.svc
   admissionReviewVersions:

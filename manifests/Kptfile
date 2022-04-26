@@ -17,7 +17,7 @@ kind: Kptfile
 metadata:
   name: digester
   annotations:
-    config.kubernetes.io/local-config: 'true'
+    config.kubernetes.io/local-config: "true"
 info:
   description: >-
     The digester mutating admission webhook resolves tags to digests for

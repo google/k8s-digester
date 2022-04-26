@@ -18,9 +18,13 @@ package keychain
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 
+	"github.com/awslabs/amazon-ecr-credential-helper/ecr-login"
+	"github.com/chrismellard/docker-credential-acr-env/pkg/credhelper"
 	"github.com/go-logr/logr"
 	"github.com/google/go-containerregistry/pkg/authn"
+	"github.com/google/go-containerregistry/pkg/authn/github"
 	"github.com/google/go-containerregistry/pkg/authn/k8schain"
 	"github.com/google/go-containerregistry/pkg/v1/google"
 	"k8s.io/client-go/kubernetes"
@@ -28,13 +32,24 @@ import (
 	"sigs.k8s.io/kustomize/kyaml/yaml"
 )
 
-var createClientFn = createClient // override for testing
+var (
+	amazonKeychain = authn.NewKeychainFromHelper(ecr.NewECRHelper(ecr.WithLogger(ioutil.Discard)))
+	azureKeychain  = authn.NewKeychainFromHelper(credhelper.NewACRCredentialsHelper())
+
+	createClientFn = createClient // override for testing
+)
 
 // Create a multi keychain based in input arguments
 func Create(ctx context.Context, log logr.Logger, config *rest.Config, n *yaml.RNode) (authn.Keychain, error) {
 	if config == nil {
 		log.V(1).Info("creating offline keychain")
-		return authn.NewMultiKeychain(google.Keychain, authn.DefaultKeychain), nil
+		return authn.NewMultiKeychain(
+			google.Keychain,
+			authn.DefaultKeychain,
+			github.Keychain,
+			amazonKeychain,
+			azureKeychain,
+		), nil
 	}
 	client, err := createClientFn(config)
 	if err != nil {
@@ -85,8 +100,8 @@ func createK8schain(ctx context.Context, log logr.Logger, client kubernetes.Inte
 		"serviceAccountName", serviceAccountName,
 		"imagePullSecrets", imagePullSecrets)
 	return k8schain.New(ctx, client, k8schain.Options{
-		Namespace:          namespace,          // k8schain defaults to "default" if empty
-		ServiceAccountName: serviceAccountName, // k8schain defaults to "default" if empty
+		Namespace:          namespace,          // defaults to "default" if empty
+		ServiceAccountName: serviceAccountName, // defaults to "default" if empty
 		ImagePullSecrets:   imagePullSecrets,
 	})
 }
