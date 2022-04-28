@@ -35,7 +35,6 @@ spec:
         digester/operation: webhook
         digester/system: "yes"
       annotations:
-        container.seccomp.security.alpha.kubernetes.io/manager: runtime/default
         prometheus.io/port: "8888" # kpt-set: ${metrics-port}
     spec:
       serviceAccountName: digester-admin
