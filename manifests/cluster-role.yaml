@@ -17,7 +17,7 @@ kind: ClusterRole
 metadata:
   name: digester-manager-role
   labels:
-    digester/system: 'yes'
+    digester/system: "yes"
 rules:
 - resources:
   - secrets # access to imagePullSecrets

@@ -21,7 +21,6 @@ import (
 
 	admissionregistrationv1 "k8s.io/api/admissionregistration/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
 
 	"github.com/google/k8s-digester/pkg/logging"
@@ -38,9 +37,6 @@ func TestMain(m *testing.M) {
 		stdlog.Info("skipping integration test suite in short mode")
 		return
 	}
-	apiServerFlags := append(envtest.DefaultKubeAPIServerFlags,
-		"--enable-admission-plugins=ValidatingAdmissionWebhook,MutatingAdmissionWebhook",
-	)
 	admissionRegistrationNamespacedScope := admissionregistrationv1.NamespacedScope
 	admissionRegistrationFailurePolicyFail := admissionregistrationv1.Fail
 	admissionregistrationIfNeededReinvocationPolicy := admissionregistrationv1.IfNeededReinvocationPolicy
@@ -48,10 +44,10 @@ func TestMain(m *testing.M) {
 	clientConfigWebhookPath := webhookPath
 
 	testEnv = &envtest.Environment{
-		KubeAPIServerFlags: apiServerFlags,
+		AttachControlPlaneOutput: true,
 		WebhookInstallOptions: envtest.WebhookInstallOptions{
-			MutatingWebhooks: []client.Object{
-				&admissionregistrationv1.MutatingWebhookConfiguration{
+			MutatingWebhooks: []*admissionregistrationv1.MutatingWebhookConfiguration{
+				{
 					TypeMeta: metav1.TypeMeta{
 						APIVersion: "admissionregistration.k8s.io/v1",
 						Kind:       "MutatingWebhookConfiguration",
@@ -98,6 +94,10 @@ func TestMain(m *testing.M) {
 			},
 		},
 	}
+
+	testEnv.ControlPlane.GetAPIServer().Configure().Append(
+		"enable-admission-plugins", "ValidatingAdmissionWebhook,MutatingAdmissionWebhook",
+	)
 
 	log := logging.CreateKlogLogger()
 	if _, err := testEnv.Start(); err != nil {

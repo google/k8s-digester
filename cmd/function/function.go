@@ -71,13 +71,13 @@ func createResourceFn(ctx context.Context, log logr.Logger) framework.ResourceLi
 }
 
 // customizeCmd modifies the kyaml function framework command by adding flags
-// that this KRM function needs, and to make it more user friendly.
+// that this KRM function needs, and to make it more user-friendly.
 func customizeCmd(cmd *cobra.Command) {
 	cmd.Use = "digester"
 	cmd.Short = "Resolve container image tags to digests"
-	cmd.Long = "Digester replaces tags with digests for container and " +
-		"init container images in Kubernetes pod specs and pod template " +
-		"specs.\n\nIt can be used either as a mutating admission webhook, " +
+	cmd.Long = "Digester adds digests to container and " +
+		"init container images in Kubernetes pod and pod template " +
+		"specs.\n\nUse either as a mutating admission webhook, " +
 		"or as a client-side KRM function with kpt or kustomize."
 	cmd.Flags().String("kubeconfig", getKubeconfigDefault(),
 		"(optional) absolute path to the kubeconfig file. Requires offline=false.")
@@ -87,12 +87,6 @@ func customizeCmd(cmd *cobra.Command) {
 		"do not connect to Kubernetes API server to retrieve imagePullSecrets")
 	viper.BindPFlag("offline", cmd.Flags().Lookup("offline"))
 	viper.BindEnv("offline")
-	command.AddGenerateDockerfile(cmd)
-	for _, subcommand := range cmd.Commands() {
-		if subcommand.Use == "gen [DIR]" {
-			subcommand.Short = "Create a Dockerfile for building this function as a container image"
-		}
-	}
 }
 
 // getKubeconfigDefault determines the default value of the --kubeconfig flag.
