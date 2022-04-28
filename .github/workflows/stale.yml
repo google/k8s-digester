@@ -18,7 +18,7 @@ name: Close stale
 
 on:
   schedule:
-  - cron: '0 0 * * *'
+  - cron: "0 0 * * *"
 
 jobs:
   stale:
@@ -26,20 +26,20 @@ jobs:
     steps:
     - uses: actions/stale@v3
       with:
-        repo-token: '${{ github.token }}'
+        repo-token: "${{ github.token }}"
 
         stale-issue-message: |-
           This issue is stale because it has been open for 28 days with no
           activity. It will automatically close after 14 more days of inactivity.
-        stale-issue-label: 'kind/stale'
-        exempt-issue-labels: 'bug,enhancement'
+        stale-issue-label: "kind/stale"
+        exempt-issue-labels: "bug,enhancement"
 
         stale-pr-message: |-
           This Pull Request is stale because it has been open for 28 days with
           no activity. It will automatically close after 14 more days of
           inactivity.
-        stale-pr-label: 'kind/stale'
-        exempt-pr-labels: 'bug,enhancement'
+        stale-pr-label: "kind/stale"
+        exempt-pr-labels: "bug,enhancement"
 
         days-before-stale: 28
         days-before-close: 14

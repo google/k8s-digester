@@ -14,23 +14,23 @@
 
 # Adapted from sethvargo/gcs-cacher
 
-name: 'CodeQL'
+name: "CodeQL"
 
 on:
   push:
     branches:
     - main
     paths-ignore:
-    - '**.md'
-    - 'docs/**'
+    - "**.md"
+    - "docs/**"
   pull_request:
     branches:
     - main
     paths-ignore:
-    - '**.md'
-    - 'docs/**'
+    - "**.md"
+    - "docs/**"
   schedule:
-  - cron: '30 0 * * 1'
+  - cron: "30 0 * * 1"
 
 jobs:
   analyze:
@@ -40,7 +40,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: ['go']
+        language: ["go"]
 
     steps:
     - name: Checkout code

@@ -19,15 +19,15 @@ name: Test
 on:
   push:
     paths-ignore:
-    - '**.md'
-    - 'docs/**'
+    - "**.md"
+    - "docs/**"
   pull_request:
     paths-ignore:
-    - '**.md'
-    - 'docs/**'
+    - "**.md"
+    - "docs/**"
 
 jobs:
-  unit:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -37,7 +37,7 @@ jobs:
     - name: Setup Go
       uses: actions/setup-go@v1
       with:
-        go-version: 1.16
+        go-version: 1.17
 
     - name: Restore dependency cache
       uses: actions/cache@v2
@@ -47,5 +47,20 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-go-
 
-    - name: Unit test
+    - name: Run unit test
       run: go test -v -count=1 -race -short -timeout=5m -vet="asmdecl,assign,atomic,bools,buildtag,cgocall,composites,copylocks,errorsas,httpresponse,loopclosure,lostcancel,nilfunc,printf,shift,stdmethods,structtag,tests,unmarshal,unreachable,unsafeptr,unusedresult" ./...
+
+    - name: Install kube-apiserver and etcd
+      run: |
+        mkdir -p ${HOME}/.local/bin
+        curl -sSL "https://github.com/kubernetes-sigs/kubebuilder/releases/download/v${KUBEBUILDER_VERSION}/kubebuilder_${KUBEBUILDER_VERSION}_linux_amd64.tar.gz" | tar --strip-components 2 -xzC ${HOME}/.local/bin
+        echo "KUBEBUILDER_ASSETS=${HOME}/.local/bin" >> $GITHUB_ENV
+      env:
+        KUBEBUILDER_VERSION: "2.3.2"
+
+    - name: Run integration tests
+      run: |
+        go test -v -count=1 -timeout=10m ./cmd/webhook/...
+      env:
+        KUBEBUILDER_ATTACH_CONTROL_PLANE_OUTPUT: "true"
+        KUBEBUILDER_CONTROLPLANE_START_TIMEOUT: 180s

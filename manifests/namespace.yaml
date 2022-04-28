@@ -19,5 +19,5 @@ metadata:
   labels:
     control-plane: controller-manager
     digester-injection: disabled
-    digester/system: 'yes'
+    digester/system: "yes"
     istio-injection: disabled

@@ -17,7 +17,7 @@ kind: ClusterRoleBinding
 metadata:
   name: digester-manager-rolebinding
   labels:
-    digester/system: 'yes'
+    digester/system: "yes"
 roleRef:
   name: digester-manager-role
   kind: ClusterRole

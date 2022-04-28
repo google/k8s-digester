@@ -20,12 +20,12 @@ metadata:
   labels:
     control-plane: controller-manager
     digester/operation: webhook
-    digester/system: 'yes'
+    digester/system: "yes"
 spec:
   selector:
     control-plane: controller-manager
     digester/operation: webhook
-    digester/system: 'yes'
+    digester/system: "yes"
   ports:
   - port: 443
     targetPort: 8443 # kpt-set: ${port}

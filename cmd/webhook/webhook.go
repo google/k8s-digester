@@ -50,7 +50,7 @@ const (
 	webhookPath        = "/v1/mutate"                              // matches the MutatingWebhookConfiguration clientConfig path
 )
 
-// Cmd is the the webhook controller manager sub-command
+// Cmd is the webhook controller manager sub-command
 var Cmd = &cobra.Command{
 	Use:   "webhook",
 	Short: "Start a Kubernetes mutating admission webhook controller manager",

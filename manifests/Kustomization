@@ -12,14 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Skaffold uses this file when deploying.
-
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 metadata:
-  name: digester
   annotations:
-    config.kubernetes.io/local-config: 'true'
+    config.kubernetes.io/local-config: "true"
+  name: digester
 resources:
 - cluster-role-binding.yaml
 - cluster-role.yaml
