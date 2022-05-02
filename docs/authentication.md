@@ -1,7 +1,7 @@
 # Authenticating to container image registries
 
 To resolve digests for private images, digester requires credentials to
-authenticate to your container image registry.
+authenticate to container image registries.
 
 ## Authentication modes
 
@@ -19,13 +19,13 @@ node or machine where it runs. This includes the following credentials:
     [Artifact Registry](https://cloud.google.com/artifact-registry/docs).
 
     For implementation details, see the
-    [github.com/google/go-containerregistry/pkg/v1/google](https://pkg.go.github.com/google/go-containerregistry/pkg/v1/google)
+    [github.com/google/go-containerregistry/pkg/v1/google](https://pkg.go.dev/github.com/google/go-containerregistry/pkg/v1/google)
     and
-    [golang.org/x/oauth2/google](https://pkg.go.dev/golang.org/x/oauth2/le)
+    [golang.org/x/oauth2/google](https://pkg.go.dev/golang.org/x/oauth2/google)
     Go packages.
 
 2.  Credentials and credential helpers specified in the
-    [Docker config file](https://github.com/google/go-containerregistry/tree//pkg/authn#the-config-file),
+    [Docker config file](https://github.com/google/go-containerregistry/tree/main/pkg/authn#docker-config-auth),
     for authenticating to any container image registry. The file name is
     `config.json`, and the default file location is the directory
     `$HOME/.docker`. You can override the default location of the config file
@@ -34,8 +34,11 @@ node or machine where it runs. This includes the following credentials:
     For implementation details, see the
     [github.com/google/go-containerregistry/pkg/authn](https://pkg.go.dev/ub.com/google/go-containerregistry/pkg/authn)
     and
-    [github.com/docker/cli/cli/config](https://pkg.go.dev/github.com/docker/cli/config)
+    [github.com/docker/cli/cli/config](https://pkg.go.dev/github.com/docker/cli/cli/config)
     Go packages.
+
+3.   Ambient credentials for GitHub Container Registry (`ghcr.io`),
+     Amazon Elastic Container Registry, and Azure Container Registry.
 
 ### Online authentication
 
@@ -43,28 +46,18 @@ When using online authentication, digester authenticates using the following
 credentials:
 
 1.  The `imagePullSecrets` listed in the
-    [pod specification](https://kubernetes.io/docs/concepts/containers/es/#specifying-imagepullsecrets-on-a-pod)
+    [pod specification](https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod)
     and the
-    [service account](https://kubernetes.io/docs/tasks/igure-pod-container/configure-service-account/-imagepullsecrets-to-a-service-account)
+    [service account](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#add-imagepullsecrets-to-a-service-account)
     used by the pod. Digester retrieves these secrets from the Kubernetes
     cluster API server.
 
     For implementation details, see the
-    [github.com/google/go-containerregistry/pkg/authn/k8schain](https://pkg.ev/github.com/google/go-containerregistry/pkg/authn/k8schain)
+    [github.com/google/go-containerregistry/pkg/authn/kubernetes](https://pkg.go.dev/github.com/google/go-containerregistry/pkg/authn/kubernetes)
     Go package.
 
-2.  Cloud provider-specific implementations of the Kubernetes
-    [`DockerConfigProvider` interface](https://pkg.go.dev/github.com/eester/k8s-pkg-credentialprovider#DockerConfigProvider).
-    For instance, the implementation for Google Cloud retrieves credentials
-    from the node or Workload Identity
-    [metadata server](https://cloud.google.com/compute/docs/ing-retrieving-metadata).
-
-    For implementation details, see the provider-specific subdirectories of the
-    [github.com/vdemeester/k8s-pkg-credentialprovider](https://pkg.go.dev/ub.com/vdemeester/k8s-pkg-credentialprovider)
-    Go package.
-
-3.  Credentials specified in the
-    [Docker config file](https://github.com/google/go-containerregistry/tree//pkg/authn#the-config-file),
+2.  Credentials specified in the
+    [Docker config file](https://github.com/google/go-containerregistry/tree/main/pkg/authn#docker-config-auth),
     for authenticating to any container image registry. The file name is
     `config.json`, and the location can be the container working directory
     (`$PWD/config.json`), or a directory called `.docker` under the user
@@ -72,7 +65,22 @@ credentials:
     directory (`/.docker/config.json`).
 
     For implementation details, see the
-    [github.com/vdemeester/k8s-pkg-credentialprovider](https://pkg.go.dev/ub.com/vdemeester/k8s-pkg-credentialprovider)
+    [github.com/google/go-containerregistry/pkg/authn](https://pkg.go.dev/ub.com/google/go-containerregistry/pkg/authn)
+    and
+    [github.com/docker/cli/cli/config](https://pkg.go.dev/github.com/docker/cli/cli/config)
+    Go packages.
+
+3.  Cloud provider-specific instances of the
+    [`Keychain` interface](https://pkg.go.dev/github.com/google/go-containerregistry/pkg/authn#Keychain).
+    For instance, the
+    [implementation for Google](https://pkg.go.dev/github.com/google/go-containerregistry/pkg/v1/google#Keychain)
+    uses Google service account credentials from the file referenced by the
+    [`GOOGLE_APPLICATION_CREDENTIALS` environment variable](https://cloud.google.com/docs/authentication/getting-started#setting_the_environment_variable),
+    or retrieves credentials from the node or Workload Identity
+    [metadata server](https://cloud.google.com/compute/docs/metadata/overview).
+
+    For implementation details, see the
+    [github.com/google/go-containerregistry/pkg/authn/k8schain](https://pkg.go.dev/github.com/google/go-containerregistry/pkg/authn/k8schain)
     Go package.
 
 The client-side KRM function defaults to offline authentication, whereas the
