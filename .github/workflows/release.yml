@@ -156,7 +156,7 @@ jobs:
     - name: Get image name with digest
       run: |
         echo -n IMAGE_NAME= >> $GITHUB_ENV
-        echo $(jq -r '.builds[] | select(.imageName=="ko://github.com/google/k8s-digester") | .tag' ${{ runner.temp }}/skaffold-artifacts.json) >> $GITHUB_ENV
+        echo $(jq -r '.builds[] | select(.imageName=="k8s-digester") | .tag' ${{ runner.temp }}/skaffold-artifacts.json) >> $GITHUB_ENV
 
     - name: Install crane
       run: |
@@ -190,7 +190,7 @@ jobs:
         EOF
 
     - name: Set image name in Kustomize manifest
-      run: kustomize edit set image "ko://github.com/google/k8s-digester=$IMAGE_NAME"
+      run: kustomize edit set image "k8s-digester=$IMAGE_NAME"
       working-directory: manifests
 
     - name: Update kpt setter values file

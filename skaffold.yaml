@@ -18,7 +18,7 @@ metadata:
   name: digester
 build:
   artifacts:
-  - image: ko://github.com/google/k8s-digester
+  - image: k8s-digester
     ko:
       dependencies:
         paths:
