@@ -29,3 +29,7 @@ resources:
 - secret.yaml
 - service-account.yaml
 - service.yaml
+images:
+- digest: sha256:a087beba0a231bab17e97ee2a79a6131bb43269b367d07b17b5fffae964f6f82
+  name: k8s-digester
+  newName: ghcr.io/google/k8s-digester:v0.1.9

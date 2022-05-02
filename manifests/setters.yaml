@@ -6,7 +6,7 @@ data:
   dry-run: "false"
   failure-policy: Ignore
   health-port: "9090"
-  image: ghcr.io/google/k8s-digester
+  image: ghcr.io/google/k8s-digester:v0.1.9@sha256:a087beba0a231bab17e97ee2a79a6131bb43269b367d07b17b5fffae964f6f82
   metrics-port: "8888"
   offline: "false"
   port: "8443"
