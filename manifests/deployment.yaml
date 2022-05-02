@@ -42,7 +42,7 @@ spec:
         kubernetes.io/os: linux
       containers:
       - name: manager
-        image: ko://github.com/google/k8s-digester # kpt-set: ${image}
+        image: k8s-digester # kpt-set: ${image}
         args:
         - webhook
         - --cert-dir=/certs # kpt-set: --cert-dir=${cert-dir}
