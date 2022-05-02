@@ -16,7 +16,7 @@ typically [SHA-256](https://wikipedia.org/wiki/SHA-2),
 to the image index, manifest list, or image manifest.
 
 If you are not familiar with image digests, read the document
-[Using container image digests](https://cloud.google.com/solutions/using-container-images).
+[Using container image digests](https://cloud.google.com/architecture/using-container-images).
 
 ## Why deploy with digests instead of tags?
 
@@ -78,10 +78,10 @@ Google Kubernetes Engine (GKE) clusters, you can use
 
 There are many ways to add image digests to Kubernetes manifests. Some of them
 are documented in the tutorial
-[Using container image digests in Kubernetes manifests](https://cloud.google.com/solutions/using-container-image-digests-in-kubernetes-manifests).
+[Using container image digests in Kubernetes manifests](https://cloud.google.com/architecture/using-container-image-digests-in-kubernetes-manifests).
 
 [Cloud Run](https://cloud.google.com/run/docs/deploying#service),
-[Cloud Run for Anthos](https://cloud.google.com/kuberun/docs/deploying#service),
+[Cloud Run for Anthos](https://cloud.google.com/anthos/run/docs/deploying#service),
 and
 [Knative Serving](https://knative.dev/docs/serving/tag-resolution/)
 resolve image tags to digests on deployment. The digest is stored in a service
@@ -89,7 +89,7 @@ revision, and all instances of that service revision use the digest.
 
 ## References
 
--   [Using container image digests](https://cloud.google.com/solutions/using-container-images)
--   [Using container image digests in Kubernetes manifests](https://cloud.google.com/solutions/using-container-image-digests-in-kubernetes-manifests)
+-   [Using container image digests](https://cloud.google.com/architecture/using-container-images)
+-   [Using container image digests in Kubernetes manifests](https://cloud.google.com/architecture/using-container-image-digests-in-kubernetes-manifests)
 -   [k/k#1697: Image name/tag resolution preprocessing pass](https://github.com/kubernetes/kubernetes/issues/1697)
 -   [Why we resolve tags in Knative](https://docs.google.com/presentation/d/e/2PACX-1vTgyp2lGDsLr_bohx3Ym_2mrTcMoFfzzd6jocUXdmWQFdXydltnraDMoLxvEe6WY9pNPpUUvM-geJ-g/pub?resourcekey=0-FH5lN4C2sbURc_ds8XRHeA)

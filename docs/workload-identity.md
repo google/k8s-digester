@@ -33,7 +33,6 @@ as the Container Registry and Artifact Registry image repositories.
 
     gcloud container clusters create digester-webhook-test \
         --enable-ip-alias \
-        --enable-stackdriver-kubernetes \
         --release-channel regular \
         --scopes cloud-platform \
         --workload-pool $PROJECT_ID.svc.id.goog \
