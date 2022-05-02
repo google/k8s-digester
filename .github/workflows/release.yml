@@ -197,7 +197,7 @@ jobs:
       run: |
         tmpfile=$(mktemp)
         kubectl patch \
-          --dry-run=client \
+          --dry-run \
           --filename setters.yaml \
           --local \
           --output yaml \
