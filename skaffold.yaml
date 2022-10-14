@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-apiVersion: skaffold/v2beta28
+apiVersion: skaffold/v3
 kind: Config
 metadata:
   name: digester
@@ -24,40 +24,43 @@ build:
         paths:
         - .ko.yaml
         - go.mod
-        - '*.go'
-        - cmd
-        - pkg
-      flags:
-        - -v
-      ldflags:
-        - -s
-        - -w
+        - '**/*.go'
+        ignore:
+        - '**/*_test.go'
   tagPolicy:
     inputDigest: {}
-deploy:
-  kustomize:
-    paths:
-    - manifests
+manifests:
+  rawYaml:
+  - manifests/*.yaml
 profiles:
-  - name: release
-    patches:
-      - op: add
-        path: /build/artifacts/0/platforms
-        value:
-          - linux/amd64
-          - linux/arm64
-      - op: add
-        path: /build/artifacts/0/ko/labels
-        value:
-          org.opencontainers.image.description: >-
-            Digester adds digests to container and init container images in
-            Kubernetes pod and pod template specs. Use either as a mutating
-            admission webhook, or as a client-side KRM function with kpt or
-            kustomize.
-          org.opencontainers.image.licenses: Apache-2.0
-          org.opencontainers.image.revision: '{{.REVISION}}'
-          org.opencontainers.image.source: '{{.SOURCE}}'
-          org.opencontainers.image.title: k8s-digester
-          org.opencontainers.image.url: '{{.URL}}'
-          org.opencontainers.image.vendor: Google LLC
-          org.opencontainers.image.version: '{{.VERSION}}'
+- name: release
+  patches:
+  - op: add
+    path: /build/artifacts/0/platforms
+    value:
+    - linux/amd64
+    - linux/arm64
+  - op: add
+    path: /build/artifacts/0/ko/labels
+    value:
+      org.opencontainers.image.description: >-
+        Digester adds digests to container and init container images in
+        Kubernetes pod and pod template specs. Use either as a mutating
+        admission webhook, or as a client-side KRM function with kpt or
+        kustomize.
+      org.opencontainers.image.licenses: Apache-2.0
+      org.opencontainers.image.revision: '{{.REVISION}}'
+      org.opencontainers.image.source: '{{.SOURCE}}'
+      org.opencontainers.image.title: k8s-digester
+      org.opencontainers.image.url: '{{.URL}}'
+      org.opencontainers.image.vendor: Google LLC
+      org.opencontainers.image.version: '{{.VERSION}}'
+  - op: add
+    path: /build/artifacts/0/ko/flags
+    value:
+    - -v
+  - op: add
+    path: /build/artifacts/0/ko/ldflags
+    value:
+    - -s
+    - -w

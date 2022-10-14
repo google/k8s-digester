@@ -28,12 +28,11 @@ jobs:
 
     env:
       CGO_ENABLED: "0"
-      COSIGN_VERSION: v1.7.2
-      GGCR_VERSION: v0.8.0
+      COSIGN_VERSION: v1.13.1
+      GGCR_VERSION: v0.12.0
       KUBEBUILDER_VERSION: "2.3.2"
-      KUSTOMIZE_VERSION: v4.5.4
       REGISTRY: ghcr.io
-      SKAFFOLD_VERSION: v1.38.0
+      SKAFFOLD_VERSION: v2.0.0
       SKAFFOLD_CACHE_ARTIFACTS: "false"
       SKAFFOLD_DETECT_MINIKUBE: "false"
       SKAFFOLD_INTERACTIVE: "false"
@@ -47,20 +46,13 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Setup Go
-      uses: actions/setup-go@v1
+      uses: actions/setup-go@v3
       with:
-        go-version: 1.17
-
-    - name: Restore dependency cache
-      uses: actions/cache@v2
-      with:
-        path: ~/go/pkg/mod
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-        restore-keys: |
-          ${{ runner.os }}-go-
+        go-version-file: go.mod
+        cache: true
 
     - name: Set image env vars
       run: |
@@ -137,11 +129,6 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ github.token }}
 
-    - name: Install kustomize
-      run: |
-        mkdir -p $HOME/.local/bin
-        curl -sSL "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2F${KUSTOMIZE_VERSION}/kustomize_${KUSTOMIZE_VERSION}_$(go env GOOS)_$(go env GOARCH).tar.gz" | tar -xzC $HOME/.local/bin kustomize
-
     - name: Render release manifest
       run: |
         skaffold render \
@@ -158,16 +145,15 @@ jobs:
         echo -n IMAGE_NAME= >> $GITHUB_ENV
         echo $(jq -r '.builds[] | select(.imageName=="k8s-digester") | .tag' ${{ runner.temp }}/skaffold-artifacts.json) >> $GITHUB_ENV
 
-    - name: Install crane
+    - name: Install krane
       run: |
         mkdir -p $HOME/.local/bin
-        curl -sSL "https://github.com/google/go-containerregistry/releases/download/${GGCR_VERSION}/go-containerregistry_$(uname -s)_$(uname -m).tar.gz" | tar -xzC $HOME/.local/bin crane
-
-    - name: Authenticate to container image registry
-      run: crane auth login ${{ env.REGISTRY }} -u ${{ github.actor }} -p ${{ github.token }}
+        curl -sSL "https://github.com/google/go-containerregistry/releases/download/${GGCR_VERSION}/go-containerregistry_$(uname -s)_$(uname -m).tar.gz" | tar -xzC $HOME/.local/bin krane
 
     - name: Update latest tag
-      run: crane tag $IMAGE_NAME latest
+      run: krane tag $IMAGE_NAME latest
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
 
     - name: Install Cosign
       uses: sigstore/cosign-installer@main
@@ -175,9 +161,10 @@ jobs:
         cosign-release: ${{ env.COSIGN_VERSION }}
 
     - name: Sign the images with GitHub OIDC Token
-      run: cosign sign --force --recursive --upload $IMAGE_NAME
+      run: cosign sign --force --k8s-chain --recursive --upload $IMAGE_NAME
       env:
         COSIGN_EXPERIMENTAL: 1
+        GITHUB_TOKEN: ${{ github.token }}
 
     - name: Create release body file
       run: |
@@ -189,21 +176,17 @@ jobs:
             $IMAGE_NAME
         EOF
 
-    - name: Set image name in Kustomize manifest
-      run: kustomize edit set image "k8s-digester=$IMAGE_NAME"
-      working-directory: manifests
-
-    - name: Update kpt setter values file
+    - name: Set image name in deployment manifest
       run: |
         tmpfile=$(mktemp)
         kubectl patch \
-          --dry-run \
-          --filename setters.yaml \
+          --dry-run=client \
+          --filename deployment.yaml \
           --local \
           --output yaml \
-          --patch '{"data":{"image":"${{ env.IMAGE_NAME }}"}}' \
+          --patch '{"spec":{"template":{"spec":{"containers":[{"name":"manager","image":"${{ env.IMAGE_NAME }}"}]}}}}' \
           > $tmpfile
-        mv $tmpfile setters.yaml
+        mv $tmpfile deployment.yaml
       working-directory: manifests
 
     - name: Update version in readme
