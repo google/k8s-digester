@@ -32,20 +32,13 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Setup Go
-      uses: actions/setup-go@v1
+      uses: actions/setup-go@v3
       with:
-        go-version: 1.17
-
-    - name: Restore dependency cache
-      uses: actions/cache@v2
-      with:
-        path: ~/go/pkg/mod
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-        restore-keys: |
-          ${{ runner.os }}-go-
+        go-version-file: go.mod
+        cache: true
 
     - name: Run unit test
       run: go test -v -count=1 -race -short -timeout=5m -vet="asmdecl,assign,atomic,bools,buildtag,cgocall,composites,copylocks,errorsas,httpresponse,loopclosure,lostcancel,nilfunc,printf,shift,stdmethods,structtag,tests,unmarshal,unreachable,unsafeptr,unusedresult" ./...

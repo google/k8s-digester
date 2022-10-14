@@ -177,7 +177,7 @@ the webhook using a
 1.  Set the `offline` flag value to `true` in the webhook Deployment manifest:
 
     ```sh
-    kpt fn eval manifests --image gcr.io/kpt-fn/apply-setters:v0.1 -- offline=true
+    kpt fn eval manifests --image gcr.io/kpt-fn/apply-setters:v0.2 -- offline=true
     ```
 
 2.  Create a Docker config file containing map entries with usernames and

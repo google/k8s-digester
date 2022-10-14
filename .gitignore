@@ -14,8 +14,7 @@
 
 *-patch.json
 .idea/
-.kpt-hydrated/
-.tmp-sink-dir/
+.kpt-pipeline/
 .vscode/
 bin/
 build/cert

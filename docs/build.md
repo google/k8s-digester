@@ -26,7 +26,7 @@ Before you proceed, clone the Git repository and install the following tools:
 - Build a container image and push it to Container Registry:
 
   ```sh
-  skaffold build --push --default-repo gcr.io/$(gcloud config get-value core/project)
+  skaffold build --push --default-repo gcr.io/$(gcloud config get core/project)
   ```
 
 The base image is `gcr.io/distroless/static:nonroot`. If you want to use a
@@ -56,5 +56,5 @@ base image from the `gcr.io/kaniko-project/executor` repository.
 2.  Build and push the webhook container image, and deploy to your Kubernetes cluster:
 
     ```sh
-    skaffold run --push --default-repo gcr.io/$(gcloud config get-value core/project)
+    skaffold run --push --default-repo gcr.io/$(gcloud config get core/project)
     ```

@@ -28,7 +28,7 @@ as the Container Registry and Artifact Registry image repositories.
     to the nodes:
 
     ```sh
-    PROJECT_ID=$(gcloud config get-value core/project)
+    PROJECT_ID=$(gcloud config get core/project)
     ZONE=us-central1-f
 
     gcloud container clusters create digester-webhook-test \

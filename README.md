@@ -66,7 +66,7 @@ the container image. You can use digester to deploy container images by digest.
     [install kustomize](https://kubectl.docs.kubernetes.io/installation/kustomize/)
     v3.7.0 or later.
 
-3.  Run the digester KRM function:
+3.  Run the digester KRM function using either kpt or kustomize:
 
     -   Using kpt:
 
@@ -100,7 +100,7 @@ The digester webhook requires Kubernetes v1.16 or later.
     ```sh
     kubectl create clusterrolebinding cluster-admin-binding \
         --clusterrole cluster-admin \
-        --user "$(gcloud config get-value core/account)"
+        --user "$(gcloud config get core/account)"
     ```
     
 2.  Install the digester webhook in your Kubernetes cluster:

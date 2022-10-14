@@ -17,7 +17,7 @@ The digester webhook requires Kubernetes v1.16 or later.
     ```sh
     kubectl create clusterrolebinding cluster-admin-binding \
         --clusterrole cluster-admin \
-        --user "$(gcloud config get-value core/account)"
+        --user "$(gcloud config get core/account)"
     ```
 
 2.  Install [kpt](https://kpt.dev/installation/) v1.0.0-beta.1 or later.
@@ -29,28 +29,19 @@ The digester webhook requires Kubernetes v1.16 or later.
     kpt pkg get "https://github.com/google/k8s-digester.git/manifests@${VERSION}" manifests
     ```
 
-4.  (Optional) List the package setters:
-
-    ```sh
-    kpt fn eval manifests --image=gcr.io/kpt-fn/list-setters:v0.1 --truncate-output=false
-    ```
-
-5.  (Optional) Customize the package by editing and applying setters, using the
-    [`apply-setters`](https://catalog.kpt.dev/apply-setters/v0.2/) KRM function.
-
-6.  Setup inventory tracking for the package:
+4.  Setup inventory tracking for the package:
 
     ```sh
     kpt live init manifests
     ```
 
-7.  Apply the package:
+5.  Apply the package:
 
     ```sh
     kpt live apply manifests --reconcile-timeout=3m --output=table
     ```
 
-8.  Add the `digest-resolution: enabled` label to namespaces where you want
+6.  Add the `digest-resolution: enabled` label to namespaces where you want
     the webhook to resolve tags to digests:
 
     ```sh
