@@ -52,10 +52,15 @@ func createResourceFn(ctx context.Context, log logr.Logger) framework.ResourceLi
 		log.V(2).Info("offline", "offline", viper.GetBool("offline"))
 		var config *rest.Config
 		if !viper.GetBool("offline") {
+			var kubeconfig string
 			var err error
-			kubeconfig := strings.FieldsFunc(viper.GetString("kubeconfig"), func(r rune) bool {
+			kubeconfigs := strings.FieldsFunc(viper.GetString("kubeconfig"), func(r rune) bool {
 				return r == ':' || r == ';'
-			})[0]
+			})
+			if len(kubeconfigs) > 0 {
+				kubeconfig = kubeconfigs[0]
+			}
+			
 			config, err = createConfig(log, kubeconfig)
 			if err != nil {
 				return fmt.Errorf("could not create k8s client config: %w", err)
