@@ -161,7 +161,7 @@ jobs:
         cosign-release: ${{ env.COSIGN_VERSION }}
 
     - name: Sign the images with GitHub OIDC Token
-      run: cosign sign --force --k8s-chain --recursive --upload $IMAGE_NAME
+      run: cosign sign --force --k8s-keychain --recursive --upload $IMAGE_NAME
       env:
         COSIGN_EXPERIMENTAL: 1
         GITHUB_TOKEN: ${{ github.token }}
