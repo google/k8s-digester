@@ -25,7 +25,7 @@ The digester webhook requires Kubernetes v1.16 or later.
 3.  Fetch this package:
 
     ```sh
-    VERSION=v0.1.9
+    VERSION=v0.1.10
     kpt pkg get "https://github.com/google/k8s-digester.git/manifests@${VERSION}" manifests
     ```
 
