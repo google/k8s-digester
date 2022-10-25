@@ -178,6 +178,7 @@ jobs:
 
     - name: Set image name in deployment manifest
       run: |
+        kubectl version --client
         tmpfile=$(mktemp)
         kubectl patch \
           --dry-run=client \
