@@ -31,6 +31,7 @@ jobs:
       COSIGN_VERSION: v1.13.1
       GGCR_VERSION: v0.12.0
       KUBEBUILDER_VERSION: "2.3.2"
+      KUBECTL_VERSION: "1.25.3"
       REGISTRY: ghcr.io
       SKAFFOLD_VERSION: v2.0.0
       SKAFFOLD_CACHE_ARTIFACTS: "false"
@@ -176,9 +177,13 @@ jobs:
             $IMAGE_NAME
         EOF
 
+    - name: Install kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: ${{ env.KUBECTL_VERSION }}
+
     - name: Set image name in deployment manifest
       run: |
-        kubectl version --client
         tmpfile=$(mktemp)
         kubectl patch \
           --dry-run=client \
