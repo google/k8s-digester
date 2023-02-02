@@ -41,7 +41,8 @@ var resolveTagFn = resolveTag // override for unit testing
 // - `spec.initContainers`
 // - `spec.template.spec.containers`
 // - `spec.template.spec.initContainers`
-//
+// - `spec.jobTemplate.spec.template.spec.containers`
+// - `spec.jobTemplate.spec.template.spec.initContainers`
 // The `config` input parameter can be null. In this case, the function
 // will not attempt to retrieve imagePullSecrets from the cluster.
 func ImageTags(ctx context.Context, log logr.Logger, config *rest.Config, n *yaml.RNode) error {
