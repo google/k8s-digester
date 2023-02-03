@@ -56,7 +56,7 @@ func ImageTags(ctx context.Context, log logr.Logger, config *rest.Config, n *yam
 	}
 	// if input is a CronJob, we need to look up the image tags in the
 	// `spec.jobTemplate.spec.template.spec` path as well
-	if _, err := n.Pipe(yaml.Lookup("spec", "jobTemplate")); err == nil {
+	if n.GetKind() == "CronJob" {
 		return n.PipeE(
 			yaml.Lookup("spec", "jobTemplate", "spec", "template", "spec"),
 			yaml.Tee(yaml.Lookup("containers"), imageTagFilter),
