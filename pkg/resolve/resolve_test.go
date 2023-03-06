@@ -111,6 +111,23 @@ func Test_ImageTags_Pod(t *testing.T) {
 	assertContainer(t, node, "image3@sha256:b0542da3f90bad69318e16ec7fcb6b13b089971886999e08bec91cea34891f0f", "spec", "initContainers", "[name=initcontainer1]")
 }
 
+func Test_ImageTags_CronJob(t *testing.T) {
+	node, err := createCronJobNode([]string{"image0", "image1"}, []string{"image2", "image3"})
+	if err != nil {
+		t.Fatalf("could not create pod node: %v", err)
+	}
+
+	if err := ImageTags(ctx, log, nil, node); err != nil {
+		t.Fatalf("problem resolving image tags: %v", err)
+	}
+	t.Log(node.MustString())
+
+	assertContainer(t, node, "image0@sha256:07d7d43fe9dd151e40f0a8d54c5211a8601b04e4a8fa7ad57ea5e73e4ffa7e4a", "spec", "jobTemplate", "spec", "template", "spec", "containers", "[name=container0]")
+	assertContainer(t, node, "image1@sha256:cc292b92ce7f10f2e4f727ecdf4b12528127c51b6ddf6058e213674603190d06", "spec", "jobTemplate", "spec", "template", "spec", "containers", "[name=container1]")
+	assertContainer(t, node, "image2@sha256:5bb21ac469b5e7df4e17899d4aae0adfb430f0f0b336a2242ef1a22d25bd2e53", "spec", "jobTemplate", "spec", "template", "spec", "initContainers", "[name=initcontainer0]")
+	assertContainer(t, node, "image3@sha256:b0542da3f90bad69318e16ec7fcb6b13b089971886999e08bec91cea34891f0f", "spec", "jobTemplate", "spec", "template", "spec", "initContainers", "[name=initcontainer1]")
+}
+
 func Test_ImageTags_Deployment(t *testing.T) {
 	node, err := createDeploymentNode([]string{"image0", "image1"}, []string{"image2", "image3"})
 	if err != nil {

@@ -56,6 +56,42 @@ func createPodNode(containerImages []string, initContainerImages []string) (*yam
 	return node, nil
 }
 
+func createCronJobNode(containerImages []string, initContainerImages []string) (*yaml.RNode, error) {
+	node, err := yaml.FromMap(M{
+		"apiVersion": "batch/v1beta1",
+		"kind":       "CronJob",
+		"metadata": M{
+			"name": "test-pod",
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+	for index, image := range containerImages {
+		if err := node.PipeE(
+			yaml.LookupCreate(yaml.SequenceNode, "spec", "jobTemplate", "spec", "template", "spec", "containers"),
+			yaml.Append(yaml.NewMapRNode(&map[string]string{
+				"name":  fmt.Sprintf("container%d", index),
+				"image": image,
+			}).YNode()),
+		); err != nil {
+			return nil, err
+		}
+	}
+	for index, image := range initContainerImages {
+		if err := node.PipeE(
+			yaml.LookupCreate(yaml.SequenceNode, "spec", "jobTemplate", "spec", "template", "spec", "initContainers"),
+			yaml.Append(yaml.NewMapRNode(&map[string]string{
+				"name":  fmt.Sprintf("initcontainer%d", index),
+				"image": image,
+			}).YNode()),
+		); err != nil {
+			return nil, err
+		}
+	}
+	return node, nil
+}
+
 func createDeploymentNode(containerImages []string, initContainerImages []string) (*yaml.RNode, error) {
 	node, err := yaml.FromMap(M{
 		"apiVersion": "apps/v1",
