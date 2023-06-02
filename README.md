@@ -121,8 +121,8 @@ To configure how the webhook authenticates to your container image registries,
 see the documentation on
 [Authenticating to container image registries](https://github.com/google/k8s-digester/blob/main/docs/authentication.md#authenticating-to-container-image-registries).
 
-If you want to install the webhook using kpt, follow the steps in the
-[package documentation](manifests/README.md).
+If you want to install the webhook using kustomize or kpt, follow the steps in
+the [package documentation](manifests/README.md).
 
 If you want to apply a pre-rendered manifest, you can download an all-in-one
 manifest file for a released version from the [Releases page](../../releases).
