@@ -28,12 +28,12 @@ jobs:
 
     env:
       CGO_ENABLED: "0"
-      COSIGN_VERSION: v1.13.1
-      GGCR_VERSION: v0.12.0
+      COSIGN_VERSION: v2.0.2
+      GGCR_VERSION: v0.14.0
       KUBEBUILDER_VERSION: "2.3.2"
-      KUBECTL_VERSION: v1.25.3
+      KUBECTL_VERSION: v1.26.5
       REGISTRY: ghcr.io
-      SKAFFOLD_VERSION: v2.0.0
+      SKAFFOLD_VERSION: v2.3.1
       SKAFFOLD_CACHE_ARTIFACTS: "false"
       SKAFFOLD_DETECT_MINIKUBE: "false"
       SKAFFOLD_INTERACTIVE: "false"
@@ -50,10 +50,9 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Setup Go
-      uses: actions/setup-go@v3
+      uses: actions/setup-go@v4
       with:
         go-version-file: go.mod
-        cache: true
 
     - name: Set image env vars
       run: |
@@ -162,9 +161,8 @@ jobs:
         cosign-release: ${{ env.COSIGN_VERSION }}
 
     - name: Sign the images with GitHub OIDC Token
-      run: cosign sign --force --k8s-keychain --recursive --upload $IMAGE_NAME
+      run: cosign sign --yes --k8s-keychain --recursive --upload $IMAGE_NAME
       env:
-        COSIGN_EXPERIMENTAL: 1
         GITHUB_TOKEN: ${{ github.token }}
 
     - name: Create release body file
