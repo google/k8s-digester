@@ -83,6 +83,12 @@ func createK8schain(ctx context.Context, log logr.Logger, client kubernetes.Inte
 		if err == nil {
 			serviceAccountName = yaml.GetValue(podTemplateServiceAccountNameNode)
 		}
+		if serviceAccountName == "" {
+			cronJobServiceAccountNameNode, err := n.Pipe(yaml.Lookup("spec", "jobTemplate", "spec", "template", "spec", "serviceAccountName"))
+			if err == nil {
+				serviceAccountName = yaml.GetValue(cronJobServiceAccountNameNode)
+			}
+		}
 	}
 	var imagePullSecrets []string
 	podImagePullSecretsNode, err := n.Pipe(yaml.Lookup("spec", "imagePullSecrets"))
@@ -93,6 +99,12 @@ func createK8schain(ctx context.Context, log logr.Logger, client kubernetes.Inte
 		podTemplateImagePullSecretsNode, err := n.Pipe(yaml.Lookup("spec", "template", "spec", "imagePullSecrets"))
 		if err == nil {
 			imagePullSecrets, _ = podTemplateImagePullSecretsNode.ElementValues("name")
+		}
+		if len(imagePullSecrets) == 0 {
+			cronJobImagePullSecretsNode, err := n.Pipe(yaml.Lookup("spec", "jobTemplate", "spec", "template", "spec", "imagePullSecrets"))
+			if err == nil {
+				imagePullSecrets, _ = cronJobImagePullSecretsNode.ElementValues("name")
+			}
 		}
 	}
 	log.V(1).Info("creating k8schain",
