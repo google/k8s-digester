@@ -4,7 +4,7 @@ Package for the [digester](https://github.com/google/k8s-digester)
 Kubernetes mutating admission webhook.
 
 The digester mutating admission webhook resolves tags to digests for container
-and init container images in Kubernetes Pod and Pod template specs.
+and init container images in Kubernetes CronJob, Pod and Pod template specs.
 
 ## Preparing for deployment
 

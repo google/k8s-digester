@@ -41,7 +41,8 @@ var resolveTagFn = resolveTag // override for unit testing
 // - `spec.initContainers`
 // - `spec.template.spec.containers`
 // - `spec.template.spec.initContainers`
-//
+// - `spec.jobTemplate.spec.template.spec.containers`
+// - `spec.jobTemplate.spec.template.spec.initContainers`
 // The `config` input parameter can be null. In this case, the function
 // will not attempt to retrieve imagePullSecrets from the cluster.
 func ImageTags(ctx context.Context, log logr.Logger, config *rest.Config, n *yaml.RNode) error {
@@ -53,6 +54,16 @@ func ImageTags(ctx context.Context, log logr.Logger, config *rest.Config, n *yam
 		Log:      log,
 		Keychain: kc,
 	}
+	// if input is a CronJob, we need to look up the image tags in the
+	// `spec.jobTemplate.spec.template.spec` path as well
+	if n.GetKind() == "CronJob" {
+		return n.PipeE(
+			yaml.Lookup("spec", "jobTemplate", "spec", "template", "spec"),
+			yaml.Tee(yaml.Lookup("containers"), imageTagFilter),
+			yaml.Tee(yaml.Lookup("initContainers"), imageTagFilter),
+		)
+	}
+	// otherwise, we look up the image tags in the `spec.template.spec` path
 	return n.PipeE(
 		yaml.Lookup("spec"),
 		yaml.Tee(yaml.Lookup("containers"), imageTagFilter),
