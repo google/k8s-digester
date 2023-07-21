@@ -59,6 +59,7 @@ If you use a private GKE cluster, see additional steps for
 4.  Setup inventory tracking for the package:
 
     ```sh
+    kubectl create namespace digester-system
     kpt live init manifests
     ```
 
