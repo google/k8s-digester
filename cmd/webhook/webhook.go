@@ -77,7 +77,7 @@ var (
 	metricsAddr         string
 	offline             bool
 	port                int
-	ignoreError         bool
+	ignoreErrors        bool
 )
 
 func init() {
@@ -89,7 +89,7 @@ func init() {
 	Cmd.Flags().StringVar(&metricsAddr, "metrics-addr", defaultMetricsAddr, "metrics endpoint address")
 	Cmd.Flags().BoolVar(&offline, "offline", false, "do not connect to API server to retrieve imagePullSecrets")
 	Cmd.Flags().IntVar(&port, "port", defaultPort, "webhook server port")
-	Cmd.Flags().BoolVar(&ignoreError, "ignore-error", false, "only log the error; do not fail on the error")
+	Cmd.Flags().BoolVar(&ignoreErrors, "ignore-errors", false, "do not fail on webhook admission errors, just log them")
 }
 
 func run(ctx context.Context) error {
@@ -146,7 +146,7 @@ func run(ctx context.Context) error {
 		close(certSetupFinished)
 	}
 
-	go setupControllers(mgr, log, dryRun, ignoreError, certSetupFinished)
+	go setupControllers(mgr, log, dryRun, ignoreErrors, certSetupFinished)
 
 	log.Info("starting manager")
 	if err := mgr.Start(ctx); err != nil {
@@ -155,7 +155,7 @@ func run(ctx context.Context) error {
 	return nil
 }
 
-func setupControllers(mgr manager.Manager, log logr.Logger, dryRun bool, ignoreError bool, certSetupFinished chan struct{}) {
+func setupControllers(mgr manager.Manager, log logr.Logger, dryRun bool, ignoreErrors bool, certSetupFinished chan struct{}) {
 	log.Info("waiting for cert rotation setup")
 	<-certSetupFinished
 	log.Info("done waiting for cert rotation setup")
@@ -164,10 +164,10 @@ func setupControllers(mgr manager.Manager, log logr.Logger, dryRun bool, ignoreE
 		config = mgr.GetConfig()
 	}
 	whh := &handler.Handler{
-		Log:         log.WithName("webhook"),
-		DryRun:      dryRun,
-		IgnoreError: ignoreError,
-		Config:      config,
+		Log:          log.WithName("webhook"),
+		DryRun:       dryRun,
+		IgnoreErrors: ignoreErrors,
+		Config:       config,
 	}
 	mwh := &admission.Webhook{Handler: whh}
 	log.Info("starting webhook server", "path", webhookPath)

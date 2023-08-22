@@ -83,8 +83,8 @@ func Test_Handle_IgnoreError(t *testing.T) {
 		},
 	}
 	h := &Handler{
-		Log:         nullLog, // suppress output of expected error
-		IgnoreError: true,
+		Log:          nullLog, // suppress output of expected error
+		IgnoreErrors: true,
 	}
 
 	resp := h.Handle(ctx, req)
