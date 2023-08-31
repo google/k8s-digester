@@ -73,6 +73,27 @@ func Test_Handle_DisallowedOnParseError(t *testing.T) {
 	assertAdmissionError(t, resp)
 }
 
+func Test_Handle_IgnoreError(t *testing.T) {
+	req := admission.Request{
+		AdmissionRequest: admissionv1.AdmissionRequest{
+			Object: runtime.RawExtension{
+				Raw: []byte("\U0001f4a9"),
+			},
+			Operation: admissionv1.Create,
+		},
+	}
+	h := &Handler{
+		Log:          nullLog, // suppress output of expected error
+		IgnoreErrors: true,
+	}
+
+	resp := h.Handle(ctx, req)
+
+	assertAdmissionAllowed(t, resp)
+	assertReason(t, resp, reasonErrorIgnored)
+	assertNoPatches(t, resp)
+}
+
 func Test_Handle_NoMutationOfDigesterNamespaceRequests(t *testing.T) {
 	req := admission.Request{
 		AdmissionRequest: admissionv1.AdmissionRequest{

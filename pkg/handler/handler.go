@@ -33,15 +33,17 @@ import (
 const (
 	reasonNoMutationForOperation = "NoMutationForOperation"
 	reasonNoSelfManagement       = "NoSelfManagement"
+	reasonErrorIgnored           = "ErrorIgnored"
 	reasonNotPatched             = "NotPatched"
 	reasonPatched                = "Patched"
 )
 
 // Handler implements admission.Handler
 type Handler struct {
-	Log    logr.Logger
-	DryRun bool
-	Config *rest.Config
+	Log          logr.Logger
+	DryRun       bool
+	IgnoreErrors bool
+	Config       *rest.Config
 }
 
 var resolveImageTags = resolve.ImageTags // override for testing
@@ -97,6 +99,10 @@ func (h *Handler) Handle(ctx context.Context, req admission.Request) admission.R
 }
 
 func (h *Handler) admissionError(err error) admission.Response {
+	if h.IgnoreErrors {
+		h.Log.Error(err, "ignored admission error")
+		return admission.Allowed(reasonErrorIgnored)
+	}
 	h.Log.Error(err, "admission error")
 	return admission.Errored(int32(http.StatusInternalServerError), err)
 }
