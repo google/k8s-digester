@@ -109,7 +109,7 @@ and you do not need a credential helper, you can run digester in a container.
 Mount your Docker config file in the container using the `--mount` flag:
 
 ```sh
-VERSION=v0.1.11
+VERSION=v0.1.12
 kpt fn eval [manifest directory] \
     --as-current-user \
     --env DOCKER_CONFIG=/.docker \
@@ -135,7 +135,7 @@ OFFLINE=false kpt fn eval [manifest directory] --exec ./digester
 If you want to run the KRM function in a container, mount your kubeconfig file:
 
 ```sh
-VERSION=v0.1.11
+VERSION=v0.1.12
 kpt fn eval [manifest directory] \
     --as-current-user \
     --env KUBECONFIG=/.kube/config \
