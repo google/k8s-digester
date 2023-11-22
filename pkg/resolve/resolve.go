@@ -45,14 +45,15 @@ var resolveTagFn = resolveTag // override for unit testing
 // - `spec.jobTemplate.spec.template.spec.initContainers`
 // The `config` input parameter can be null. In this case, the function
 // will not attempt to retrieve imagePullSecrets from the cluster.
-func ImageTags(ctx context.Context, log logr.Logger, config *rest.Config, n *yaml.RNode) error {
+func ImageTags(ctx context.Context, log logr.Logger, config *rest.Config, n *yaml.RNode, skipPrefixes []string) error {
 	kc, err := keychain.Create(ctx, log, config, n)
 	if err != nil {
 		return fmt.Errorf("could not create keychain: %w", err)
 	}
 	imageTagFilter := &ImageTagFilter{
-		Log:      log,
-		Keychain: kc,
+		Log:          log,
+		Keychain:     kc,
+		SkipPrefixes: &skipPrefixes,
 	}
 	// if input is a CronJob, we need to look up the image tags in the
 	// `spec.jobTemplate.spec.template.spec` path as well
@@ -76,8 +77,9 @@ func ImageTags(ctx context.Context, log logr.Logger, config *rest.Config, n *yam
 
 // ImageTagFilter resolves image tags to digests
 type ImageTagFilter struct {
-	Log      logr.Logger
-	Keychain authn.Keychain
+	Log          logr.Logger
+	Keychain     authn.Keychain
+	SkipPrefixes *[]string
 }
 
 var _ yaml.Filter = &ImageTagFilter{}
@@ -97,6 +99,12 @@ func (f *ImageTagFilter) filterImage(n *yaml.RNode) error {
 		return fmt.Errorf("could not lookup image in node %v: %w", s, err)
 	}
 	image := yaml.GetValue(imageNode)
+	for _, prefix := range *f.SkipPrefixes {
+		if strings.HasPrefix(image, prefix) {
+			// Image should be excluded from digest resolution
+			return nil
+		}
+	}
 	if strings.Contains(image, "@") {
 		return nil // already has digest, skip
 	}
