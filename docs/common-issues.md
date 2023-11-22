@@ -108,3 +108,40 @@ The steps below use the `HTTPS_PROXY` environment variable.
 Note that this will not work for proxies that require NTLM authentication.
 
 Ref: https://knative.dev/docs/serving/tag-resolution/#corporate-proxy
+
+## Interaction with systems expecting tags, particularly cloud managed services
+
+If digester updates an image tag that is being actively managed by a cloud controller then
+it may cause the cloud controller to behave unexpectedly.
+
+One example of this is the Anthos Service Mesh Managed Dataplane Controller which looks
+for specific tagged versions of the istio-proxy sidecar injected by the mutating webhook.
+
+Replacement of the tagged names with digest values can, under these circumstances, create
+an edge case for the cloud managed services handling unepected values in unforseen ways such
+as updating pods and terminating them once they have already been updated (since the image
+does not match the value set by the controller with only the tag).
+
+In these circumstances and if you are using digester to provide a tag feature when using
+Binary Authorization it is worth noting that there is a capability to whitelist certain
+image registries and repo locations within Binary Authorization. ASM images are by default
+whitelisted by the policy.
+
+To avoid digester replacing the tagged version expected by mdp-controller in these instances
+one can utilise the --skip-prefixes option to the webhook which takes a set of prefixes
+separated by a colon (if multiple prefixes are needed).
+
+The parameter can be added to the webhook args in the deployment, the following is an
+example
+```
+        args:
+        - webhook
+        - --cert-dir=/certs # kpt-set: --cert-dir=${cert-dir}
+        - --disable-cert-rotation=false # kpt-set: --disable-cert-rotation=${disable-cert-rotation}
+        - --dry-run=false # kpt-set: --dry-run=${dry-run}
+        - --health-addr=:9090 # kpt-set: --health-addr=:${health-port}
+        - --metrics-addr=:8888 # kpt-set: --metrics-addr=:${metrics-port}
+        - --offline=false # kpt-set: --offline=${offline}
+        - --port=8443 # kpt-set: --port=${port}
+        - --skip-prefixes=gcr.io/gke-release/asm/mdp:gcr.io/gke-release/asm/proxyv2
+```

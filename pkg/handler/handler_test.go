@@ -123,7 +123,7 @@ func Test_Handle_NotPatchedWhenNoChange(t *testing.T) {
 			},
 		},
 	}
-	resolveImageTags = func(_ context.Context, _ logr.Logger, _ *rest.Config, _ *yaml.RNode) error {
+	resolveImageTags = func(_ context.Context, _ logr.Logger, _ *rest.Config, _ *yaml.RNode, _ []string) error {
 		return nil
 	}
 	h := &Handler{Log: log}
@@ -146,7 +146,7 @@ func Test_Handle_Patch(t *testing.T) {
 		},
 	}
 	imageWithDigest := "registry.example.com/repository/image:tag@sha256:digest"
-	resolveImageTags = func(_ context.Context, _ logr.Logger, _ *rest.Config, n *yaml.RNode) error {
+	resolveImageTags = func(_ context.Context, _ logr.Logger, _ *rest.Config, n *yaml.RNode, _ []string) error {
 		return n.PipeE(yaml.Lookup("spec", "containers", "0", "image"), yaml.FieldSetter{StringValue: imageWithDigest})
 	}
 	h := &Handler{Log: log}

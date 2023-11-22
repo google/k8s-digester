@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/go-logr/logr"
 	"github.com/spf13/cobra"
@@ -33,6 +32,7 @@ import (
 
 	"github.com/google/k8s-digester/pkg/logging"
 	"github.com/google/k8s-digester/pkg/resolve"
+	"github.com/google/k8s-digester/pkg/util"
 )
 
 // Cmd creates the KRM function command. This is the root command.
@@ -50,24 +50,23 @@ func createResourceFn(ctx context.Context, log logr.Logger) framework.ResourceLi
 	return func(resourceList *framework.ResourceList) error {
 		log.V(2).Info("kubeconfig", "kubeconfig", viper.GetString("kubeconfig"))
 		log.V(2).Info("offline", "offline", viper.GetBool("offline"))
+		log.V(2).Info("skip-prefixes", "skip-prefixes", util.StringArray(viper.GetString("skip-prefixes")))
 		var config *rest.Config
 		if !viper.GetBool("offline") {
 			var kubeconfig string
 			var err error
-			kubeconfigs := strings.FieldsFunc(viper.GetString("kubeconfig"), func(r rune) bool {
-				return r == ':' || r == ';'
-			})
+			kubeconfigs := util.StringArray(viper.GetString("kubeconfig"))
 			if len(kubeconfigs) > 0 {
 				kubeconfig = kubeconfigs[0]
 			}
-			
+
 			config, err = createConfig(log, kubeconfig)
 			if err != nil {
 				return fmt.Errorf("could not create k8s client config: %w", err)
 			}
 		}
 		for _, r := range resourceList.Items {
-			if err := resolve.ImageTags(ctx, log, config, r); err != nil {
+			if err := resolve.ImageTags(ctx, log, config, r, util.StringArray(viper.GetString("skip-prefixes"))); err != nil {
 				return err
 			}
 		}
@@ -92,6 +91,9 @@ func customizeCmd(cmd *cobra.Command) {
 		"do not connect to Kubernetes API server to retrieve imagePullSecrets")
 	viper.BindPFlag("offline", cmd.Flags().Lookup("offline"))
 	viper.BindEnv("offline")
+	cmd.Flags().String("skip-prefixes", "", "(optional) image prefixes that should not be resolved to digests, colon separated")
+	viper.BindPFlag("skip-prefixes", cmd.Flags().Lookup("skip-prefixes"))
+	viper.BindEnv("skip-prefixes", "SKIP_PREFIXES")
 }
 
 // getKubeconfigDefault determines the default value of the --kubeconfig flag.

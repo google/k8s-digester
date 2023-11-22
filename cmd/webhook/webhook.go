@@ -78,6 +78,7 @@ var (
 	offline             bool
 	port                int
 	ignoreErrors        bool
+	skipPrefixes        string
 )
 
 func init() {
@@ -90,6 +91,7 @@ func init() {
 	Cmd.Flags().BoolVar(&offline, "offline", false, "do not connect to API server to retrieve imagePullSecrets")
 	Cmd.Flags().IntVar(&port, "port", defaultPort, "webhook server port")
 	Cmd.Flags().BoolVar(&ignoreErrors, "ignore-errors", false, "do not fail on webhook admission errors, just log them")
+	Cmd.Flags().StringVar(&skipPrefixes, "skip-prefixes", "", "(optional) image prefixes that should not be resolved to digests, colon separated")
 }
 
 func run(ctx context.Context) error {
@@ -146,7 +148,7 @@ func run(ctx context.Context) error {
 		close(certSetupFinished)
 	}
 
-	go setupControllers(mgr, log, dryRun, ignoreErrors, certSetupFinished)
+	go setupControllers(mgr, log, dryRun, ignoreErrors, certSetupFinished, util.StringArray(skipPrefixes))
 
 	log.Info("starting manager")
 	if err := mgr.Start(ctx); err != nil {
@@ -155,7 +157,7 @@ func run(ctx context.Context) error {
 	return nil
 }
 
-func setupControllers(mgr manager.Manager, log logr.Logger, dryRun bool, ignoreErrors bool, certSetupFinished chan struct{}) {
+func setupControllers(mgr manager.Manager, log logr.Logger, dryRun bool, ignoreErrors bool, certSetupFinished chan struct{}, skipPrefixes []string) {
 	log.Info("waiting for cert rotation setup")
 	<-certSetupFinished
 	log.Info("done waiting for cert rotation setup")
@@ -168,6 +170,7 @@ func setupControllers(mgr manager.Manager, log logr.Logger, dryRun bool, ignoreE
 		DryRun:       dryRun,
 		IgnoreErrors: ignoreErrors,
 		Config:       config,
+		SkipPrefixes: skipPrefixes,
 	}
 	mwh := &admission.Webhook{Handler: whh}
 	log.Info("starting webhook server", "path", webhookPath)
