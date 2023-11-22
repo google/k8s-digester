@@ -57,7 +57,7 @@ the container image. You can use digester to deploy container images by digest.
     Alternatively, you can download the latest version using these commands:
 
     ```sh
-    VERSION=v0.1.12
+    VERSION=v0.1.13
     curl -Lo digester "https://github.com/google/k8s-digester/releases/download/${VERSION}/digester_$(uname -s)_$(uname -m)"
     chmod +x digester
     ```
@@ -106,7 +106,7 @@ The digester webhook requires Kubernetes v1.16 or later.
 2.  Install the digester webhook in your Kubernetes cluster:
 
     ```sh
-    VERSION=v0.1.12
+    VERSION=v0.1.13
     kubectl apply -k "https://github.com/google/k8s-digester.git/manifests/?ref=${VERSION}"
     ```
 
