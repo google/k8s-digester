@@ -31,12 +31,16 @@ import (
 func Test_ResolvePublicGCRImage(t *testing.T) {
 	ctx := ctrl.SetupSignalHandler()
 	scheme := runtime.NewScheme()
-	corev1.AddToScheme(scheme)
+	if err := corev1.AddToScheme(scheme); err != nil {
+		t.Fatalf("could not add core v1 Kubernetes resources to scheme")
+	}
 	mgr, err := ctrl.NewManager(testEnv.Config, ctrl.Options{
-		CertDir: testEnv.WebhookInstallOptions.LocalServingCertDir,
-		Host:    testEnv.WebhookInstallOptions.LocalServingHost,
-		Port:    testEnv.WebhookInstallOptions.LocalServingPort,
-		Scheme:  scheme,
+		Scheme: scheme,
+		WebhookServer: webhook.NewServer(webhook.Options{
+			Host:    testEnv.WebhookInstallOptions.LocalServingHost,
+			Port:    testEnv.WebhookInstallOptions.LocalServingPort,
+			CertDir: testEnv.WebhookInstallOptions.LocalServingCertDir,
+		}),
 	})
 	if err != nil {
 		t.Fatalf("could not create test controller manager: %+v", err)

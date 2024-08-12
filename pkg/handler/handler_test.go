@@ -23,7 +23,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"gomodules.xyz/jsonpatch/v2"
 	admissionv1 "k8s.io/api/admission/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
@@ -53,7 +52,7 @@ func Test_Handle_NoPatchesForDelete(t *testing.T) {
 	resp := h.Handle(ctx, req)
 
 	assertAdmissionAllowed(t, resp)
-	assertReason(t, resp, reasonNoMutationForOperation)
+	assertMessage(t, resp, reasonNoMutationForOperation)
 	assertNoPatches(t, resp)
 }
 
@@ -90,7 +89,7 @@ func Test_Handle_IgnoreError(t *testing.T) {
 	resp := h.Handle(ctx, req)
 
 	assertAdmissionAllowed(t, resp)
-	assertReason(t, resp, reasonErrorIgnored)
+	assertMessage(t, resp, reasonErrorIgnored)
 	assertNoPatches(t, resp)
 }
 
@@ -109,7 +108,7 @@ func Test_Handle_NoMutationOfDigesterNamespaceRequests(t *testing.T) {
 	resp := h.Handle(ctx, req)
 
 	assertAdmissionAllowed(t, resp)
-	assertReason(t, resp, reasonNoSelfManagement)
+	assertMessage(t, resp, reasonNoSelfManagement)
 	assertNoPatches(t, resp)
 }
 
@@ -131,7 +130,7 @@ func Test_Handle_NotPatchedWhenNoChange(t *testing.T) {
 	resp := h.Handle(ctx, req)
 
 	assertAdmissionAllowed(t, resp)
-	assertReason(t, resp, reasonNotPatched)
+	assertMessage(t, resp, reasonNotPatched)
 	assertNoPatches(t, resp)
 }
 
@@ -154,7 +153,7 @@ func Test_Handle_Patch(t *testing.T) {
 	resp := h.Handle(ctx, req)
 
 	assertAdmissionAllowed(t, resp)
-	assertReason(t, resp, reasonPatched)
+	assertMessage(t, resp, reasonPatched)
 	if len(resp.Patches) < 1 {
 		t.Errorf("expected len(resp.Patches) == 1, got %d", len(resp.Patches))
 	}
@@ -196,8 +195,8 @@ func assertNoPatches(t *testing.T, resp admission.Response) {
 	}
 }
 
-func assertReason(t *testing.T, resp admission.Response, wantReason string) {
-	if resp.Result.Reason != metav1.StatusReason(wantReason) {
-		t.Errorf("wanted reason %s, got %s", wantReason, resp.Result.Reason)
+func assertMessage(t *testing.T, resp admission.Response, wantMessage string) {
+	if resp.Result.Message != wantMessage {
+		t.Errorf("wanted reason %s, got %s", wantMessage, resp.Result.Message)
 	}
 }

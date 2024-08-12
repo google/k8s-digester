@@ -30,6 +30,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client/config"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
+	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
+	"sigs.k8s.io/controller-runtime/pkg/webhook"
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 
 	"github.com/google/k8s-digester/pkg/handler"
@@ -107,15 +109,21 @@ func run(ctx context.Context) error {
 		return fmt.Errorf("unable to get kubeconfig: %w", err)
 	}
 	scheme := runtime.NewScheme()
-	corev1.AddToScheme(scheme)
+	if err := corev1.AddToScheme(scheme); err != nil {
+		return fmt.Errorf("could not add core/v1 Kubernetes resources to scheme: %w", err)
+	}
 	mgr, err := manager.New(cfg, manager.Options{
-		Scheme:                 scheme,
-		Logger:                 log,
-		LeaderElection:         false,
-		Port:                   port,
-		CertDir:                certDir,
-		MetricsBindAddress:     metricsAddr,
+		Scheme:         scheme,
+		Logger:         log,
+		LeaderElection: false,
+		Metrics: metricsserver.Options{
+			BindAddress: metricsAddr,
+		},
 		HealthProbeBindAddress: healthAddr,
+		WebhookServer: webhook.NewServer(webhook.Options{
+			Port:    port,
+			CertDir: certDir,
+		}),
 	})
 	if err != nil {
 		return fmt.Errorf("unable to set up manager: %w", err)
@@ -161,15 +169,15 @@ func setupControllers(mgr manager.Manager, log logr.Logger, dryRun bool, ignoreE
 	log.Info("waiting for cert rotation setup")
 	<-certSetupFinished
 	log.Info("done waiting for cert rotation setup")
-	var config *rest.Config
+	var k8sClientConfig *rest.Config
 	if !offline {
-		config = mgr.GetConfig()
+		k8sClientConfig = mgr.GetConfig()
 	}
 	whh := &handler.Handler{
 		Log:          log.WithName("webhook"),
 		DryRun:       dryRun,
 		IgnoreErrors: ignoreErrors,
-		Config:       config,
+		Config:       k8sClientConfig,
 		SkipPrefixes: skipPrefixes,
 	}
 	mwh := &admission.Webhook{Handler: whh}

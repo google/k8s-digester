@@ -45,7 +45,7 @@ jobs:
     - name: Install kube-apiserver and etcd
       run: |
         mkdir -p ${HOME}/.local/bin
-        curl -sSL "https://github.com/kubernetes-sigs/kubebuilder/releases/download/v${KUBEBUILDER_VERSION}/kubebuilder_${KUBEBUILDER_VERSION}_linux_amd64.tar.gz" | tar --strip-components 2 -xzC ${HOME}/.local/bin
+        curl -sSL "https://github.com/kubernetes-sigs/kubebuilder/releases/download/v${KUBEBUILDER_VERSION}/kubebuilder_${KUBEBUILDER_VERSION}_linux_amd64.tar.gz" | tar --strip-components 2 -xzC ${HOME}/.local/bin kubebuilder_${KUBEBUILDER_VERSION}_linux_amd64/bin/etcd kubebuilder_${KUBEBUILDER_VERSION}_linux_amd64/bin/kube-apiserver kubebuilder_${KUBEBUILDER_VERSION}_linux_amd64/bin/kubebuilder
         echo "KUBEBUILDER_ASSETS=${HOME}/.local/bin" >> $GITHUB_ENV
       env:
         KUBEBUILDER_VERSION: "2.3.2"
