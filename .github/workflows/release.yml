@@ -28,12 +28,12 @@ jobs:
 
     env:
       CGO_ENABLED: "0"
-      COSIGN_VERSION: v2.0.2
-      GGCR_VERSION: v0.14.0
+      COSIGN_VERSION: v2.4.0
+      GGCR_VERSION: v0.20.2
       KUBEBUILDER_VERSION: "2.3.2"
-      KUBECTL_VERSION: v1.26.5
+      KUBECTL_VERSION: v1.30.3
       REGISTRY: ghcr.io
-      SKAFFOLD_VERSION: v2.3.1
+      SKAFFOLD_VERSION: v2.13.1
       SKAFFOLD_CACHE_ARTIFACTS: "false"
       SKAFFOLD_DETECT_MINIKUBE: "false"
       SKAFFOLD_INTERACTIVE: "false"
@@ -74,7 +74,7 @@ jobs:
     - name: Install kube-apiserver and etcd
       run: |
         mkdir -p ${HOME}/.local/bin
-        curl -sSL "https://github.com/kubernetes-sigs/kubebuilder/releases/download/v${KUBEBUILDER_VERSION}/kubebuilder_${KUBEBUILDER_VERSION}_linux_amd64.tar.gz" | tar --strip-components 2 -xzC ${HOME}/.local/bin
+        curl -sSL "https://github.com/kubernetes-sigs/kubebuilder/releases/download/v${KUBEBUILDER_VERSION}/kubebuilder_${KUBEBUILDER_VERSION}_linux_amd64.tar.gz" | tar --strip-components 2 -xzC ${HOME}/.local/bin kubebuilder_${KUBEBUILDER_VERSION}_linux_amd64/bin/etcd kubebuilder_${KUBEBUILDER_VERSION}_linux_amd64/bin/kube-apiserver kubebuilder_${KUBEBUILDER_VERSION}_linux_amd64/bin/kubebuilder
         echo "KUBEBUILDER_ASSETS=${HOME}/.local/bin" >> $GITHUB_ENV
 
     - name: Run integration tests
@@ -161,7 +161,7 @@ jobs:
         cosign-release: ${{ env.COSIGN_VERSION }}
 
     - name: Sign the images with GitHub OIDC Token
-      run: cosign sign --yes --k8s-keychain --recursive --upload $IMAGE_NAME
+      run: cosign sign --k8s-keychain --recursive --upload --yes $IMAGE_NAME
       env:
         GITHUB_TOKEN: ${{ github.token }}
 
