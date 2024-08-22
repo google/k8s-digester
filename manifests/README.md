@@ -34,7 +34,7 @@ If you use a private GKE cluster, see additional steps for
 2.  Apply this package:
 
     ```sh
-    VERSION=v0.1.14
+    VERSION=v0.1.15
     kustomize build "https://github.com/google/k8s-digester.git/manifests?ref=$VERSION" | kubectl apply -f -
     ```
 
@@ -52,7 +52,7 @@ If you use a private GKE cluster, see additional steps for
 3.  Fetch this package:
 
     ```sh
-    VERSION=v0.1.14
+    VERSION=v0.1.15
     kpt pkg get "https://github.com/google/k8s-digester.git/manifests@${VERSION}" manifests
     ```
 
