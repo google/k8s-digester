@@ -121,5 +121,5 @@ func (f *ImageTagFilter) filterImage(n *yaml.RNode) error {
 func resolveTag(image string, keychain authn.Keychain) (string, error) {
 	return crane.Digest(image,
 		crane.WithAuthFromKeychain(keychain),
-		crane.WithUserAgent(fmt.Sprintf("%s/%s", "digester", version.Version)))
+		crane.WithUserAgent(fmt.Sprintf("cloud-solutions/%s-%s", "k8s-digester", version.Version)))
 }
