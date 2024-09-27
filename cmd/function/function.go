@@ -40,7 +40,11 @@ func Cmd(ctx context.Context) *cobra.Command {
 	log := logging.CreateStdLogger("digester")
 	resourceFn := createResourceFn(ctx, log)
 	cmd := command.Build(framework.ResourceListProcessorFunc(resourceFn), command.StandaloneDisabled, false)
-	customizeCmd(cmd)
+	if err := customizeCmd(cmd); err != nil {
+		_, _ = fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
 	return cmd
 }
 
@@ -76,7 +80,7 @@ func createResourceFn(ctx context.Context, log logr.Logger) framework.ResourceLi
 
 // customizeCmd modifies the kyaml function framework command by adding flags
 // that this KRM function needs, and to make it more user-friendly.
-func customizeCmd(cmd *cobra.Command) {
+func customizeCmd(cmd *cobra.Command) error {
 	cmd.Use = "digester"
 	cmd.Short = "Resolve container image tags to digests"
 	cmd.Long = "Digester adds digests to container and " +
@@ -85,15 +89,28 @@ func customizeCmd(cmd *cobra.Command) {
 		"or as a client-side KRM function with kpt or kustomize."
 	cmd.Flags().String("kubeconfig", getKubeconfigDefault(),
 		"(optional) absolute path to the kubeconfig file. Requires offline=false.")
-	viper.BindPFlag("kubeconfig", cmd.Flags().Lookup("kubeconfig"))
-	viper.BindEnv("kubeconfig")
+	if err := viper.BindPFlag("kubeconfig", cmd.Flags().Lookup("kubeconfig")); err != nil {
+		return err
+	}
+	if err := viper.BindEnv("kubeconfig"); err != nil {
+		return err
+	}
 	cmd.Flags().Bool("offline", true,
 		"do not connect to Kubernetes API server to retrieve imagePullSecrets")
-	viper.BindPFlag("offline", cmd.Flags().Lookup("offline"))
-	viper.BindEnv("offline")
+	if err := viper.BindPFlag("offline", cmd.Flags().Lookup("offline")); err != nil {
+		return err
+	}
+	if err := viper.BindEnv("offline"); err != nil {
+		return err
+	}
 	cmd.Flags().String("skip-prefixes", "", "(optional) image prefixes that should not be resolved to digests, colon separated")
-	viper.BindPFlag("skip-prefixes", cmd.Flags().Lookup("skip-prefixes"))
-	viper.BindEnv("skip-prefixes", "SKIP_PREFIXES")
+	if err := viper.BindPFlag("skip-prefixes", cmd.Flags().Lookup("skip-prefixes")); err != nil {
+		return err
+	}
+	if err := viper.BindEnv("skip-prefixes", "SKIP_PREFIXES"); err != nil {
+		return err
+	}
+	return nil
 }
 
 // getKubeconfigDefault determines the default value of the --kubeconfig flag.
