@@ -114,7 +114,9 @@ func (f *ImageTagFilter) filterImage(n *yaml.RNode) error {
 	}
 	f.Log.V(1).Info("resolved tag to digest", "image", image, "digest", digest)
 	imageWithDigest := fmt.Sprintf("%s@%s", image, digest)
-	n.Pipe(yaml.Lookup("image"), yaml.Set(yaml.NewStringRNode(imageWithDigest)))
+	if _, err := n.Pipe(yaml.Lookup("image"), yaml.Set(yaml.NewStringRNode(imageWithDigest))); err != nil {
+		return fmt.Errorf("could not set image: %w", err)
+	}
 	return nil
 }
 
