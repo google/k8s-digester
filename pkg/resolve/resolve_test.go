@@ -52,7 +52,7 @@ func init() {
 	// Implementation of resolveTagFn that computes the SHA-256 sum of the
 	// image name. We could make this simpler since it's just for testing, but
 	// it means the digest values have the same 'shape' as real values.
-	resolveTagFn = func(image string, _ authn.Keychain) (string, error) {
+	resolveTagFn = func(image string, platform string, _ authn.Keychain) (string, error) {
 		if image == "" || image == "error" {
 			return "", fmt.Errorf("intentional error resolving image [%s]", image)
 		}
@@ -101,7 +101,7 @@ func Test_ImageTags_Pod(t *testing.T) {
 		t.Fatalf("could not create pod node: %v", err)
 	}
 
-	if err := ImageTags(ctx, log, nil, node, []string{}); err != nil {
+	if err := ImageTags(ctx, log, nil, node, []string{}, ""); err != nil {
 		t.Fatalf("problem resolving image tags: %v", err)
 	}
 	t.Log(node.MustString())
@@ -118,7 +118,7 @@ func Test_ImageTags_Pod_Skip_Prefixes(t *testing.T) {
 		t.Fatalf("could not create pod node: %v", err)
 	}
 
-	if err := ImageTags(ctx, log, nil, node, []string{"skip1.local", "skip2.local"}); err != nil {
+	if err := ImageTags(ctx, log, nil, node, []string{"skip1.local", "skip2.local"}, ""); err != nil {
 		t.Fatalf("problem resolving image tags: %v", err)
 	}
 	t.Log(node.MustString())
@@ -135,7 +135,7 @@ func Test_ImageTags_CronJob(t *testing.T) {
 		t.Fatalf("could not create pod node: %v", err)
 	}
 
-	if err := ImageTags(ctx, log, nil, node, []string{}); err != nil {
+	if err := ImageTags(ctx, log, nil, node, []string{}, ""); err != nil {
 		t.Fatalf("problem resolving image tags: %v", err)
 	}
 	t.Log(node.MustString())
@@ -152,7 +152,7 @@ func Test_ImageTags_Deployment(t *testing.T) {
 		t.Fatalf("could not create deployment node: %v", err)
 	}
 
-	if err := ImageTags(ctx, log, nil, node, []string{}); err != nil {
+	if err := ImageTags(ctx, log, nil, node, []string{}, ""); err != nil {
 		t.Fatalf("problem resolving image tags: %v", err)
 	}
 	t.Log(node.MustString())

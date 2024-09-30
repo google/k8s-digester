@@ -19,6 +19,7 @@ package resolve
 import (
 	"context"
 	"fmt"
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"strings"
 
 	"github.com/go-logr/logr"
@@ -45,7 +46,7 @@ var resolveTagFn = resolveTag // override for unit testing
 // - `spec.jobTemplate.spec.template.spec.initContainers`
 // The `config` input parameter can be null. In this case, the function
 // will not attempt to retrieve imagePullSecrets from the cluster.
-func ImageTags(ctx context.Context, log logr.Logger, config *rest.Config, n *yaml.RNode, skipPrefixes []string) error {
+func ImageTags(ctx context.Context, log logr.Logger, config *rest.Config, n *yaml.RNode, skipPrefixes []string, platform string) error {
 	kc, err := keychain.Create(ctx, log, config, n)
 	if err != nil {
 		return fmt.Errorf("could not create keychain: %w", err)
@@ -54,6 +55,7 @@ func ImageTags(ctx context.Context, log logr.Logger, config *rest.Config, n *yam
 		Log:          log,
 		Keychain:     kc,
 		SkipPrefixes: &skipPrefixes,
+		Platform:     platform,
 	}
 	// if input is a CronJob, we need to look up the image tags in the
 	// `spec.jobTemplate.spec.template.spec` path as well
@@ -80,6 +82,7 @@ type ImageTagFilter struct {
 	Log          logr.Logger
 	Keychain     authn.Keychain
 	SkipPrefixes *[]string
+	Platform     string
 }
 
 var _ yaml.Filter = &ImageTagFilter{}
@@ -108,7 +111,7 @@ func (f *ImageTagFilter) filterImage(n *yaml.RNode) error {
 	if strings.Contains(image, "@") {
 		return nil // already has digest, skip
 	}
-	digest, err := resolveTagFn(image, f.Keychain)
+	digest, err := resolveTagFn(image, f.Platform, f.Keychain)
 	if err != nil {
 		return fmt.Errorf("could not get digest for %s: %w", image, err)
 	}
@@ -120,8 +123,17 @@ func (f *ImageTagFilter) filterImage(n *yaml.RNode) error {
 	return nil
 }
 
-func resolveTag(image string, keychain authn.Keychain) (string, error) {
-	return crane.Digest(image,
+func resolveTag(image string, platform string, keychain authn.Keychain) (string, error) {
+	opts := []crane.Option{
 		crane.WithAuthFromKeychain(keychain),
-		crane.WithUserAgent(fmt.Sprintf("cloud-solutions/%s-%s", "k8s-digester", version.Version)))
+		crane.WithUserAgent(fmt.Sprintf("cloud-solutions/%s-%s", "k8s-digester", version.Version)),
+	}
+	if platform != "" {
+		pf, err := v1.ParsePlatform(platform)
+		if err != nil {
+			return "", err
+		}
+		opts = append(opts, crane.WithPlatform(pf))
+	}
+	return crane.Digest(image, opts...)
 }

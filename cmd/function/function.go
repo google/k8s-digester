@@ -55,6 +55,7 @@ func createResourceFn(ctx context.Context, log logr.Logger) framework.ResourceLi
 		log.V(2).Info("kubeconfig", "kubeconfig", viper.GetString("kubeconfig"))
 		log.V(2).Info("offline", "offline", viper.GetBool("offline"))
 		log.V(2).Info("skip-prefixes", "skip-prefixes", util.StringArray(viper.GetString("skip-prefixes")))
+		log.V(2).Info("platform", "platform", viper.GetString("platform"))
 		var config *rest.Config
 		if !viper.GetBool("offline") {
 			var kubeconfig string
@@ -70,7 +71,7 @@ func createResourceFn(ctx context.Context, log logr.Logger) framework.ResourceLi
 			}
 		}
 		for _, r := range resourceList.Items {
-			if err := resolve.ImageTags(ctx, log, config, r, util.StringArray(viper.GetString("skip-prefixes"))); err != nil {
+			if err := resolve.ImageTags(ctx, log, config, r, util.StringArray(viper.GetString("skip-prefixes")), viper.GetString("platform")); err != nil {
 				return err
 			}
 		}
@@ -108,6 +109,12 @@ func customizeCmd(cmd *cobra.Command) error {
 		return err
 	}
 	if err := viper.BindEnv("skip-prefixes", "SKIP_PREFIXES"); err != nil {
+		return err
+	}
+	if err := viper.BindPFlag("platform", cmd.Flags().Lookup("platform")); err != nil {
+		return err
+	}
+	if err := viper.BindEnv("platform"); err != nil {
 		return err
 	}
 	return nil
