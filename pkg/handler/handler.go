@@ -45,6 +45,7 @@ type Handler struct {
 	IgnoreErrors bool
 	Config       *rest.Config
 	SkipPrefixes []string
+	Platform     string
 }
 
 var resolveImageTags = resolve.ImageTags // override for testing
@@ -75,7 +76,7 @@ func (h *Handler) Handle(ctx context.Context, req admission.Request) admission.R
 		return h.admissionError(err)
 	}
 
-	if err = resolveImageTags(ctx, h.Log, h.Config, r, h.SkipPrefixes); err != nil {
+	if err = resolveImageTags(ctx, h.Log, h.Config, r, h.SkipPrefixes, h.Platform); err != nil {
 		return h.admissionError(err)
 	}
 

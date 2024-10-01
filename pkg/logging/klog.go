@@ -16,10 +16,10 @@ package logging
 
 import (
 	"github.com/go-logr/logr"
-	"k8s.io/klog/v2/klogr"
+	"k8s.io/klog/v2/textlogger"
 )
 
 // CreateKlogLogger using Kubernetes klog
 func CreateKlogLogger() logr.Logger {
-	return klogr.New()
+	return textlogger.NewLogger(textlogger.NewConfig())
 }

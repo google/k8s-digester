@@ -81,6 +81,7 @@ var (
 	port                int
 	ignoreErrors        bool
 	skipPrefixes        string
+	platform            string
 )
 
 func init() {
@@ -94,6 +95,7 @@ func init() {
 	Cmd.Flags().IntVar(&port, "port", defaultPort, "webhook server port")
 	Cmd.Flags().BoolVar(&ignoreErrors, "ignore-errors", false, "do not fail on webhook admission errors, just log them")
 	Cmd.Flags().StringVar(&skipPrefixes, "skip-prefixes", "", "(optional) image prefixes that should not be resolved to digests, colon separated")
+	Cmd.Flags().StringVar(&platform, "platform", "", "resolve only to platform specific images i.e. linux/amd64")
 }
 
 func run(ctx context.Context) error {
@@ -156,7 +158,7 @@ func run(ctx context.Context) error {
 		close(certSetupFinished)
 	}
 
-	go setupControllers(mgr, log, dryRun, ignoreErrors, certSetupFinished, util.StringArray(skipPrefixes))
+	go setupControllers(mgr, log, dryRun, ignoreErrors, certSetupFinished, util.StringArray(skipPrefixes), platform)
 
 	log.Info("starting manager")
 	if err := mgr.Start(ctx); err != nil {
@@ -165,7 +167,7 @@ func run(ctx context.Context) error {
 	return nil
 }
 
-func setupControllers(mgr manager.Manager, log logr.Logger, dryRun bool, ignoreErrors bool, certSetupFinished chan struct{}, skipPrefixes []string) {
+func setupControllers(mgr manager.Manager, log logr.Logger, dryRun bool, ignoreErrors bool, certSetupFinished chan struct{}, skipPrefixes []string, platform string) {
 	log.Info("waiting for cert rotation setup")
 	<-certSetupFinished
 	log.Info("done waiting for cert rotation setup")
@@ -179,6 +181,7 @@ func setupControllers(mgr manager.Manager, log logr.Logger, dryRun bool, ignoreE
 		IgnoreErrors: ignoreErrors,
 		Config:       k8sClientConfig,
 		SkipPrefixes: skipPrefixes,
+		Platform:     platform,
 	}
 	mwh := &admission.Webhook{Handler: whh}
 	log.Info("starting webhook server", "path", webhookPath)

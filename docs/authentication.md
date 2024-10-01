@@ -156,6 +156,10 @@ You can provide an alternative kubeconfig file by setting the value of the
 `--kubeconfig` command-line flag or the `KUBECONFIG` environment variable to
 the full path of an alternative kubeconfig file.
 
+You can also limit the resolve of image tags to only a specific platform by 
+specifying the `--platform` command-line flag with the target platform 
+e.g. `linux/amd64`.
+
 ## Webhook online authentication
 
 The webhook uses online authentication by default, and it uses the

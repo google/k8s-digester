@@ -19,6 +19,8 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
 
@@ -52,12 +54,17 @@ func init() {
 	// Implementation of resolveTagFn that computes the SHA-256 sum of the
 	// image name. We could make this simpler since it's just for testing, but
 	// it means the digest values have the same 'shape' as real values.
-	resolveTagFn = func(image string, _ authn.Keychain) (string, error) {
+	resolveTagFn = func(image string, platform string, _ authn.Keychain) (string, error) {
 		if image == "" || image == "error" {
 			return "", fmt.Errorf("intentional error resolving image [%s]", image)
 		}
 		sumBytes := sha256.Sum256([]byte(image))
 		digest := strings.TrimRight(hex.EncodeToString(sumBytes[:]), "\r\n")
+		if platform != "" {
+			if _, err := v1.ParsePlatform(platform); err != nil {
+				return "", err
+			}
+		}
 		return fmt.Sprintf("sha256:%s", digest), nil
 	}
 }
@@ -101,7 +108,7 @@ func Test_ImageTags_Pod(t *testing.T) {
 		t.Fatalf("could not create pod node: %v", err)
 	}
 
-	if err := ImageTags(ctx, log, nil, node, []string{}); err != nil {
+	if err := ImageTags(ctx, log, nil, node, []string{}, ""); err != nil {
 		t.Fatalf("problem resolving image tags: %v", err)
 	}
 	t.Log(node.MustString())
@@ -118,7 +125,7 @@ func Test_ImageTags_Pod_Skip_Prefixes(t *testing.T) {
 		t.Fatalf("could not create pod node: %v", err)
 	}
 
-	if err := ImageTags(ctx, log, nil, node, []string{"skip1.local", "skip2.local"}); err != nil {
+	if err := ImageTags(ctx, log, nil, node, []string{"skip1.local", "skip2.local"}, ""); err != nil {
 		t.Fatalf("problem resolving image tags: %v", err)
 	}
 	t.Log(node.MustString())
@@ -135,7 +142,7 @@ func Test_ImageTags_CronJob(t *testing.T) {
 		t.Fatalf("could not create pod node: %v", err)
 	}
 
-	if err := ImageTags(ctx, log, nil, node, []string{}); err != nil {
+	if err := ImageTags(ctx, log, nil, node, []string{}, ""); err != nil {
 		t.Fatalf("problem resolving image tags: %v", err)
 	}
 	t.Log(node.MustString())
@@ -152,7 +159,7 @@ func Test_ImageTags_Deployment(t *testing.T) {
 		t.Fatalf("could not create deployment node: %v", err)
 	}
 
-	if err := ImageTags(ctx, log, nil, node, []string{}); err != nil {
+	if err := ImageTags(ctx, log, nil, node, []string{}, ""); err != nil {
 		t.Fatalf("problem resolving image tags: %v", err)
 	}
 	t.Log(node.MustString())
@@ -161,6 +168,29 @@ func Test_ImageTags_Deployment(t *testing.T) {
 	assertContainer(t, node, "image1@sha256:cc292b92ce7f10f2e4f727ecdf4b12528127c51b6ddf6058e213674603190d06", "spec", "template", "spec", "containers", "[name=container1]")
 	assertContainer(t, node, "image2@sha256:5bb21ac469b5e7df4e17899d4aae0adfb430f0f0b336a2242ef1a22d25bd2e53", "spec", "template", "spec", "initContainers", "[name=initcontainer0]")
 	assertContainer(t, node, "image3@sha256:b0542da3f90bad69318e16ec7fcb6b13b089971886999e08bec91cea34891f0f", "spec", "template", "spec", "initContainers", "[name=initcontainer1]")
+}
+
+func Test_ImageTags_ForPlatform(t *testing.T) {
+	node, err := createDeploymentNode([]string{"image0", "image1"}, []string{"image2", "image3"})
+	if err != nil {
+		t.Fatalf("could not create deployment node: %v", err)
+	}
+
+	if err := ImageTags(ctx, log, nil, node, []string{}, "linux/amd64"); err != nil {
+		t.Fatalf("problem resolving image tags: %v", err)
+	}
+	t.Log(node.MustString())
+}
+
+func Test_ImageTags_InvalidPlatform(t *testing.T) {
+	node, err := createDeploymentNode([]string{"image0", "image1"}, []string{"image2", "image3"})
+	if err != nil {
+		t.Fatalf("could not create deployment node: %v", err)
+	}
+
+	err = ImageTags(ctx, log, nil, node, []string{}, "some/other/linux/variant")
+	assert.ErrorContains(t, err, "too many slashes in platform spec")
+	t.Log(node.MustString())
 }
 
 func assertContainer(t *testing.T, n *yaml.RNode, imageWithDigest string, path ...string) {

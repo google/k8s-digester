@@ -18,8 +18,6 @@ package keychain
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
-
 	"github.com/awslabs/amazon-ecr-credential-helper/ecr-login"
 	"github.com/chrismellard/docker-credential-acr-env/pkg/credhelper"
 	"github.com/go-logr/logr"
@@ -27,13 +25,14 @@ import (
 	"github.com/google/go-containerregistry/pkg/authn/github"
 	"github.com/google/go-containerregistry/pkg/authn/k8schain"
 	"github.com/google/go-containerregistry/pkg/v1/google"
+	"io"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/kustomize/kyaml/yaml"
 )
 
 var (
-	amazonKeychain = authn.NewKeychainFromHelper(ecr.NewECRHelper(ecr.WithLogger(ioutil.Discard)))
+	amazonKeychain = authn.NewKeychainFromHelper(ecr.NewECRHelper(ecr.WithLogger(io.Discard)))
 	azureKeychain  = authn.NewKeychainFromHelper(credhelper.NewACRCredentialsHelper())
 
 	createClientFn = createClient // override for testing
