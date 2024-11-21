@@ -15,7 +15,6 @@
 package util
 
 import (
-	"io/ioutil"
 	"os"
 )
 
@@ -27,7 +26,7 @@ func GetPodName() string {
 	if found {
 		return pod
 	}
-	podb, err := ioutil.ReadFile("/etc/hostname")
+	podb, err := os.ReadFile("/etc/hostname")
 	if err == nil && len(podb) > 0 {
 		return string(podb)
 	}
@@ -40,7 +39,7 @@ func GetNamespace() string {
 	if found {
 		return ns
 	}
-	nsb, err := ioutil.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/namespace")
+	nsb, err := os.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/namespace")
 	if err == nil && len(nsb) > 0 {
 		return string(nsb)
 	}
