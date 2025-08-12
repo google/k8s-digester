@@ -20,7 +20,7 @@ import (
 	"sigs.k8s.io/kustomize/kyaml/yaml"
 )
 
-func createPodNode(containerImages []string, initContainerImages []string) (*yaml.RNode, error) {
+func createPodNode(containerImages []string, initContainerImages []string, ephemeralContainerImages []string) (*yaml.RNode, error) {
 	node, err := yaml.FromMap(M{
 		"apiVersion": "v1",
 		"kind":       "Pod",
@@ -47,6 +47,17 @@ func createPodNode(containerImages []string, initContainerImages []string) (*yam
 			yaml.LookupCreate(yaml.SequenceNode, "spec", "initContainers"),
 			yaml.Append(yaml.NewMapRNode(&map[string]string{
 				"name":  fmt.Sprintf("initcontainer%d", index),
+				"image": image,
+			}).YNode()),
+		); err != nil {
+			return nil, err
+		}
+	}
+	for index, image := range ephemeralContainerImages {
+		if err := node.PipeE(
+			yaml.LookupCreate(yaml.SequenceNode, "spec", "ephemeralContainers"),
+			yaml.Append(yaml.NewMapRNode(&map[string]string{
+				"name":  fmt.Sprintf("ephemeralcontainer%d", index),
 				"image": image,
 			}).YNode()),
 		); err != nil {

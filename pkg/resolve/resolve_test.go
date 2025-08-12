@@ -96,7 +96,7 @@ func Test_ImageTagFilter_filterImage_Container(t *testing.T) {
 }
 
 func Test_ImageTags_Pod(t *testing.T) {
-	node, err := createPodNode([]string{"image0", "image1"}, []string{"image2", "image3"})
+	node, err := createPodNode([]string{"image0", "image1"}, []string{"image2", "image3"}, []string{"image4", "image5"})
 	if err != nil {
 		t.Fatalf("could not create pod node: %v", err)
 	}
@@ -110,10 +110,12 @@ func Test_ImageTags_Pod(t *testing.T) {
 	assertContainer(t, node, "image1@sha256:cc292b92ce7f10f2e4f727ecdf4b12528127c51b6ddf6058e213674603190d06", "spec", "containers", "[name=container1]")
 	assertContainer(t, node, "image2@sha256:5bb21ac469b5e7df4e17899d4aae0adfb430f0f0b336a2242ef1a22d25bd2e53", "spec", "initContainers", "[name=initcontainer0]")
 	assertContainer(t, node, "image3@sha256:b0542da3f90bad69318e16ec7fcb6b13b089971886999e08bec91cea34891f0f", "spec", "initContainers", "[name=initcontainer1]")
+	assertContainer(t, node, "image4@sha256:9ca97c69ef7957a20eb9747ae40ae1d7c1326736b68fc75a74b25742c3f1fecd", "spec", "ephemeralContainers", "[name=ephemeralcontainer0]")
+	assertContainer(t, node, "image5@sha256:51077af79f2b143d082e17640704cec760301d4e266ec868147f0cef3e329a48", "spec", "ephemeralContainers", "[name=ephemeralcontainer1]")
 }
 
 func Test_ImageTags_Pod_Skip_Prefixes(t *testing.T) {
-	node, err := createPodNode([]string{"image0", "skip1.local/image1"}, []string{"image2", "skip2.local/image3"})
+	node, err := createPodNode([]string{"image0", "skip1.local/image1"}, []string{"image2", "skip2.local/image3"}, []string{})
 	if err != nil {
 		t.Fatalf("could not create pod node: %v", err)
 	}
