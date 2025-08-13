@@ -69,6 +69,7 @@ func ImageTags(ctx context.Context, log logr.Logger, config *rest.Config, n *yam
 		yaml.Lookup("spec"),
 		yaml.Tee(yaml.Lookup("containers"), imageTagFilter),
 		yaml.Tee(yaml.Lookup("initContainers"), imageTagFilter),
+		yaml.Tee(yaml.Lookup("ephemeralContainers"), imageTagFilter),
 		yaml.Lookup("template", "spec"),
 		yaml.Tee(yaml.Lookup("containers"), imageTagFilter),
 		yaml.Tee(yaml.Lookup("initContainers"), imageTagFilter),
