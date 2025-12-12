@@ -1,0 +1,26 @@
+name: build and release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  pre_release:
+    name: Pre-Release
+    uses: politiet/organa-workflows/.github/workflows/semantic-release-calculate-version.yaml@v1.0.1
+  build-and-push:
+    name: Release
+    needs:
+      - pre_release
+    uses: politiet/organa-workflows/.github/workflows/go-publish-ko.yaml@v1.0.1
+    with:
+      tag: "${{ needs.pre_release.outputs.VERSION }}"
+      azure_client_id: "${{ vars.AZURE_CLIENT_ID }}"
+      github_environment: release
+    if: ${{ needs.pre_release.outputs.HAS_NEW_VERSION }}
+  release:
+    name: Release
+    needs:
+      - build-and-push
+    uses: politiet/organa-workflows/.github/workflows/semantic-release.yaml@v1.0.1

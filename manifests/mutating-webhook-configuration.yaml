@@ -32,6 +32,7 @@ webhooks:
       path: /v1/mutate
     caBundle: Cg==
   failurePolicy: Ignore # kpt-set: ${failure-policy}
+
   namespaceSelector:
     matchLabels:
       digest-resolution: enabled

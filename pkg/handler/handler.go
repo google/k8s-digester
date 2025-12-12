@@ -18,6 +18,7 @@ package handler
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"github.com/go-logr/logr"
 	"gomodules.xyz/jsonpatch/v2"
@@ -45,6 +46,7 @@ type Handler struct {
 	IgnoreErrors bool
 	Config       *rest.Config
 	SkipPrefixes []string
+	Timeout      time.Duration
 }
 
 var resolveImageTags = resolve.ImageTags // override for testing
@@ -74,8 +76,9 @@ func (h *Handler) Handle(ctx context.Context, req admission.Request) admission.R
 	if err != nil {
 		return h.admissionError(err)
 	}
-
-	if err = resolveImageTags(ctx, h.Log, h.Config, r, h.SkipPrefixes); err != nil {
+	ctxRegistry, cancel := context.WithTimeout(ctx, h.Timeout)
+	defer cancel()
+	if err = resolveImageTags(ctxRegistry, h.Log, h.Config, r, h.SkipPrefixes); err != nil {
 		return h.admissionError(err)
 	}
 

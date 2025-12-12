@@ -19,6 +19,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"time"
 
 	"github.com/go-logr/logr"
 	"github.com/open-policy-agent/cert-controller/pkg/rotator"
@@ -81,6 +82,7 @@ var (
 	port                int
 	ignoreErrors        bool
 	skipPrefixes        string
+	timeout             time.Duration
 )
 
 func init() {
@@ -94,6 +96,7 @@ func init() {
 	Cmd.Flags().IntVar(&port, "port", defaultPort, "webhook server port")
 	Cmd.Flags().BoolVar(&ignoreErrors, "ignore-errors", false, "do not fail on webhook admission errors, just log them")
 	Cmd.Flags().StringVar(&skipPrefixes, "skip-prefixes", "", "(optional) image prefixes that should not be resolved to digests, colon separated")
+	Cmd.Flags().DurationVar(&timeout, "timeout", time.Second*30, "Timeout for contacting container registry")
 }
 
 func run(ctx context.Context) error {
@@ -156,7 +159,7 @@ func run(ctx context.Context) error {
 		close(certSetupFinished)
 	}
 
-	go setupControllers(mgr, log, dryRun, ignoreErrors, certSetupFinished, util.StringArray(skipPrefixes))
+	go setupControllers(mgr, log, dryRun, ignoreErrors, certSetupFinished, util.StringArray(skipPrefixes), timeout)
 
 	log.Info("starting manager")
 	if err := mgr.Start(ctx); err != nil {
@@ -165,7 +168,7 @@ func run(ctx context.Context) error {
 	return nil
 }
 
-func setupControllers(mgr manager.Manager, log logr.Logger, dryRun bool, ignoreErrors bool, certSetupFinished chan struct{}, skipPrefixes []string) {
+func setupControllers(mgr manager.Manager, log logr.Logger, dryRun bool, ignoreErrors bool, certSetupFinished chan struct{}, skipPrefixes []string, timeout time.Duration) {
 	log.Info("waiting for cert rotation setup")
 	<-certSetupFinished
 	log.Info("done waiting for cert rotation setup")
@@ -179,6 +182,7 @@ func setupControllers(mgr manager.Manager, log logr.Logger, dryRun bool, ignoreE
 		IgnoreErrors: ignoreErrors,
 		Config:       k8sClientConfig,
 		SkipPrefixes: skipPrefixes,
+		Timeout:      timeout,
 	}
 	mwh := &admission.Webhook{Handler: whh}
 	log.Info("starting webhook server", "path", webhookPath)
