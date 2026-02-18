@@ -188,7 +188,7 @@ jobs:
           --filename deployment.yaml \
           --local \
           --output yaml \
-          --patch '{"spec":{"template":{"spec":{"containers":[{"name":"manager","image":"${{ env.IMAGE_NAME }}"}]}}}}' \
+          --patch '{"spec":{"template":{"spec":{"containers":[{"name":"manager","image":"${IMAGE_NAME}"}]}}}}' \
           > $tmpfile
         mv $tmpfile deployment.yaml
       working-directory: manifests
