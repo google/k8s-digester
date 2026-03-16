@@ -39,6 +39,7 @@ webhooks:
   rules:
   - resources:
     - pods
+    - pods/ephemeralcontainers
     - podtemplates
     - replicationcontrollers
     apiGroups:
